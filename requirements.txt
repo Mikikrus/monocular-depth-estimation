@@ -1,0 +1,8 @@
+torch
+torchvision
+torchaudio
+jupyter
+matplotlib
+albumentations
+segmentation-models-pytorch
+lightning
