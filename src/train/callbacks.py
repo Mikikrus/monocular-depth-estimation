@@ -1,3 +1,5 @@
+"""PyTorch Lightning callbacks. Callbacks are used to perform actions at various events during training and inference.
+For example, ModelCheckpoint callback saves the best model based on the validation loss."""
 import lightning as pl
 import matplotlib.pyplot as plt
 import torch
@@ -7,6 +9,7 @@ from src import DEVICE
 
 
 class ModelCheckpoint(callbacks.ModelCheckpoint):
+    """Model checkpoint callback. Saves the best model based on the validation loss."""
     def __init__(
         self,
         save_top_k: int = 2,
@@ -24,12 +27,18 @@ class ModelCheckpoint(callbacks.ModelCheckpoint):
 class VisualizePrediction(callbacks.Callback):
     """Visualize the prediction and ground truth for the first num_samples in the validation dataset."""
 
-    def __init__(self, num_samples: int = 3):
+    def __init__(self, num_samples: int = 3) -> None:
         super().__init__()
         self.num_samples = num_samples
 
     def on_validation_end(self, trainer: pl.Trainer, pl_module: pl.LightningModule) -> None:
-        # Log the prediction and ground truth
+        """Visualize the prediction and ground truth for the first num_samples in the validation dataset. The images are
+        logged to the wandb logger.
+        :param trainer: PyTorch Lightning trainer.
+        :rtype: pl.Trainer
+        :param pl_module: PyTorch Lightning module.
+        :rtype: pl.LightningModule
+        """
         for prediction_id in range(self.num_samples):
             sample_data = trainer.datamodule.val_dataset[prediction_id]
             image = torch.unsqueeze(sample_data["image"], 0).float().to(DEVICE)

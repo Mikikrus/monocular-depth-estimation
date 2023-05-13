@@ -1,11 +1,12 @@
+"""Download data from Google Drive either by copying it from Google Drive to Google Colab or by using gdown."""
 import os
 import shutil
 import subprocess
-
+from typing import Optional
 from src import IS_COLAB
 
 
-def download_data(destination_path: str, file_id:str) -> None:
+def _download_data(destination_path: str, file_id: str) -> None:
     """Download data from Google Drive using gdown.
     :param destination_path: path to download data to
     :type destination_path: str
@@ -28,7 +29,7 @@ def download_data(destination_path: str, file_id:str) -> None:
     os.remove(output)
 
 
-def copy_from_drive(destination_path: str, source_path: str) -> None:
+def _copy_from_drive(destination_path: str, source_path: str) -> None:
     """Copies the data from google drive. Function used in Google Colab.
     :param destination_path: path to download data to
     :type destination_path: str
@@ -48,15 +49,21 @@ def copy_from_drive(destination_path: str, source_path: str) -> None:
     os.remove("data.zip")
 
 
-def download_dataset() -> None:
+def download_dataset(
+    destination_path: str = "../../",
+    source_path: Optional[str] = "drive/MyDrive/cityscapes_dataset.zip",
+    file_id: Optional[str] = "1w2khj04-wdtAj-1dNLWWKZhVo26BjMG2",
+) -> None:
     """Download data using gdown, when using local machine, copy from Google Drive when using Google Colab.
     :return: None
     :rtype: None
     """
     if IS_COLAB:
-        copy_from_drive(destination_path="../", source_path="drive/MyDrive/cityscapes_dataset.zip")
+        assert source_path is not None, "source_path cannot be None when copying from Google Drive"
+        _copy_from_drive(destination_path=destination_path, source_path=source_path)
     else:
-        download_data(destination_path="../", file_id="1w2khj04-wdtAj-1dNLWWKZhVo26BjMG2")
+        assert file_id is not None, "source_path cannot be None when downloading from GDrive"
+        _download_data(destination_path=destination_path, file_id=file_id)
 
 
 if __name__ == "__main__":

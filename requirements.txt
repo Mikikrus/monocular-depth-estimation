@@ -4,5 +4,6 @@ torchaudio
 jupyter
 matplotlib
 albumentations
-segmentation-models-pytorch
 lightning
+pytest
+wandb
