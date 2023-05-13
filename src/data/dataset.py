@@ -46,13 +46,13 @@ class DepthEstimationDataset(Dataset):
         label = np.load(label_path).astype(np.float32)
 
         if self.transforms is not None:
-            transformed_data = self.transforms(image=image, depth=depth, label=label)
+            transformed_data = self.transforms(image=image, depth_image=depth, label=label)
             image = transformed_data["image"]
             depth = transformed_data["depth_image"]
             label = transformed_data["label"]
 
         return {
-            "image": torch.from_numpy(image),
-            "depth_image": torch.from_numpy(depth),
-            "label": torch.from_numpy(label),
+            "image": image,
+            "depth_image": depth,
+            "label": label,
         }

@@ -6,6 +6,13 @@ import lightning as pl
 import torch
 from torch import nn
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
+from typing import Protocol, Any
+
+
+class CallableObjectProtocol(Protocol):
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        ...
+
 
 class LightningModel(pl.LightningModule):
     """Lightning model class. It is a wrapper around the model that handles forward step, loss calculation, optimizer
@@ -14,16 +21,16 @@ class LightningModel(pl.LightningModule):
     def __init__(
         self,
         model: nn.Module,
-        optimizer: str = "Adam",
-        learning_rate=1e-4,
-        loss: nn.Module = None,
-        lr_scheduler_params: Union[dict, None] = None,
+        optimizer: str,
+        learning_rate,
+        loss: CallableObjectProtocol,
+        lr_scheduler_params: Union[dict, None],
     ) -> None:
         super().__init__()
         self.model = model
         self.optimizer = getattr(torch.optim, optimizer)
         self.learning_rate = learning_rate
-        self.save_hyperparameters()
+        self.save_hyperparameters(ignore=["model", "loss"])
         self.lr_scheduler = None
         self.loss = loss
         self.lr_scheduler_params = lr_scheduler_params
@@ -57,7 +64,7 @@ class LightningModel(pl.LightningModule):
         depth_images = batch["depth_image"]
         outputs = self.model(images)
         loss = self.calculate_loss(prediction=outputs, ground_truth=depth_images)
-        self.log(f"{state}/{self.loss.__name__}", loss)
+        self.log(f"{state}/{self.loss.__class__.__name__}", loss)
         return loss
 
     def training_step(self, batch, batch_idx):

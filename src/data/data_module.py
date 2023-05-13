@@ -24,10 +24,10 @@ class DepthEstimationDataModule(pl.LightningDataModule):
         self.train_subset: Optional[DepthEstimationDataset] = None
         self.val_subset: Optional[DepthEstimationDataset] = None
 
-    def setup(self, stage: str) -> None:
+    def setup(self, stage: Optional[str] = None) -> None:
         """Initialize the datasets."""
         self.train_subset = DepthEstimationDataset(self.data_dir, split="train", transforms=self.transforms)
-        self.val_subset = DepthEstimationDataset(self.data_dir, split="val", transforms=None)
+        self.val_subset = DepthEstimationDataset(self.data_dir, split="val", transforms=self.transforms)
 
     def train_dataloader(self):
         return DataLoader(

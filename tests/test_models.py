@@ -6,7 +6,7 @@ import torch
 from src import models
 
 MODELS = [models.Unet3Plus]
-ENCODERS: List[str] = ["maxxvitv2_nano_rw_256.sw_in1k"]
+ENCODERS: List[str] = ["tf_efficientnetv2_m.in21k_ft_in1k"]
 
 
 def _test_forward(model: torch.nn.Module, sample: torch.Tensor, test_shape: bool = False) -> None:
@@ -33,7 +33,7 @@ def test_model(model_class: torch.nn.Module, encoder_name: str) -> None:
     :param encoder_name: Name of the model used as an encoder
     :rtype encoder_name: str
     """
-    sample = torch.ones([2, 3, 256, 256], dtype=torch.float)
+    sample = torch.ones([2, 3, 128, 256], dtype=torch.float)
     model = model_class(encoder_name=encoder_name,decoder_attention_type="scse")
     model.eval()
     _test_forward(model, sample, test_shape=True)

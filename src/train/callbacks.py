@@ -40,12 +40,13 @@ class VisualizePrediction(callbacks.Callback):
         :rtype: pl.LightningModule
         """
         for prediction_id in range(self.num_samples):
-            sample_data = trainer.datamodule.val_dataset[prediction_id]
+            sample_data = trainer.datamodule.val_subset[prediction_id]
             image = torch.unsqueeze(sample_data["image"], 0).float().to(DEVICE)
             depth_image = torch.unsqueeze(sample_data["depth_image"], 0).float().to(DEVICE)
             with torch.no_grad():
                 prediction = trainer.model.model(image).detach().cpu()
             fig, ax = plt.subplots(1, ncols=2, figsize=(15, 5))
-            ax[0].imshow(prediction.squeeze().cpu(), cmap="hot")
-            ax[1].imshow(depth_image.squeeze().cpu(), cmap="hot")
+            ax[0].imshow(depth_image.squeeze().cpu(), cmap="hot")
+            ax[1].imshow(prediction.squeeze().cpu(), cmap="hot")
             trainer.logger.experiment.log({f"prediction {prediction_id}": fig})
+            plt.close(fig)
