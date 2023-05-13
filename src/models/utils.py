@@ -1,4 +1,5 @@
 from typing import Optional
+
 from .timm_encoder import TimmUniversalEncoder
 
 

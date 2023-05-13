@@ -1,12 +1,11 @@
 """Training module. It contains LightningModel class that is a wrapper around the model that handles forward step,
 loss calculation, optimizer and learning rate scheduler."""
-from typing import Union
+from typing import Any, Protocol, Union
 
 import lightning as pl
 import torch
 from torch import nn
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
-from typing import Protocol, Any
 
 
 class CallableObjectProtocol(Protocol):

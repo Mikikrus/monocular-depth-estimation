@@ -34,7 +34,7 @@ def test_model(model_class: torch.nn.Module, encoder_name: str) -> None:
     :rtype encoder_name: str
     """
     sample = torch.ones([2, 3, 128, 256], dtype=torch.float)
-    model = model_class(encoder_name=encoder_name,decoder_attention_type="scse")
+    model = model_class(encoder_name=encoder_name, decoder_attention_type="scse")
     model.eval()
     _test_forward(model, sample, test_shape=True)
 

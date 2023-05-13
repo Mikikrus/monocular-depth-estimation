@@ -1,10 +1,11 @@
 import torch
 import torch.nn as nn
+
 from .modules import Activation
+
 
 def initialize_decoder(module):
     for m in module.modules():
-
         if isinstance(m, nn.Conv2d):
             nn.init.kaiming_uniform_(m.weight, mode="fan_in", nonlinearity="relu")
             if m.bias is not None:
@@ -34,7 +35,6 @@ class BaseModel(torch.nn.Module):
         initialize_head(self.head)
 
     def check_input_shape(self, x):
-
         h, w = x.shape[-2:]
         output_stride = self.encoder.output_stride
         if h % output_stride != 0 or w % output_stride != 0:

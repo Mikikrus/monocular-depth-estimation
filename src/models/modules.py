@@ -12,7 +12,6 @@ class Conv2dReLU(nn.Sequential):
         stride=1,
         use_batchnorm=True,
     ):
-
         conv = nn.Conv2d(
             in_channels,
             out_channels,
@@ -68,7 +67,6 @@ class Clamp(nn.Module):
 
 class Activation(nn.Module):
     def __init__(self, name, **params):
-
         super().__init__()
 
         if name is None or name == "identity":

@@ -270,7 +270,6 @@ class Unet3PlusDecoder(nn.Module):
 
         # tensors are calculated for each stage
         for i, stage in enumerate(self.stages):
-
             total_features = features_in_scope.copy()
             total_features.extend(decoded_features)
             x = stage(total_features)

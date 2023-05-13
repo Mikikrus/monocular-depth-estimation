@@ -10,6 +10,7 @@ from src import DEVICE
 
 class ModelCheckpoint(callbacks.ModelCheckpoint):
     """Model checkpoint callback. Saves the best model based on the validation loss."""
+
     def __init__(
         self,
         save_top_k: int = 2,

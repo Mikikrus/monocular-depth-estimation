@@ -1,7 +1,7 @@
 """Example of transforms for training."""
 
-from albumentations.pytorch import ToTensorV2
 import albumentations
+from albumentations.pytorch import ToTensorV2
 
 transforms = albumentations.Compose(
     [
