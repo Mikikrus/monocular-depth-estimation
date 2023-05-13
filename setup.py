@@ -1,6 +1,6 @@
 import os
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 from scripts.get_project_version import get_project_version
 
@@ -42,6 +42,9 @@ setup(
             "flake8~=5.0.4",
             "pylint~=2.14.3",
             "mypy~=0.971",
+            "jupyter==1.0.0"
+            "pytest==7.3.1"
+
         ]
     },
     include_package_data=True,
