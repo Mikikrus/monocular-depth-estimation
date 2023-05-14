@@ -44,6 +44,7 @@ setup(
             "mypy~=0.971",
             "jupyter==1.0.0"
             "pytest==7.3.1"
+            "sphinx-rtd-theme==1.2.0"
 
         ]
     },

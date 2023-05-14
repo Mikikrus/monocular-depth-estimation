@@ -13,6 +13,7 @@ class CallableObjectProtocol(Protocol):
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         """Call method of the callable object.
+
         :param args: Arguments.
         :type args: Any
         :param kwargs: Keyword arguments.
@@ -36,6 +37,7 @@ class LightningModel(pl.LightningModule):
         lr_scheduler_params: Union[dict, None],
     ) -> None:
         """Initialize LightningModel.
+
         :param model: Model.
         :type model: nn.Module
         :param optimizer: Name of one of the torch optimizers.
@@ -60,6 +62,7 @@ class LightningModel(pl.LightningModule):
 
     def calculate_loss(self, prediction: torch.Tensor, ground_truth: torch.Tensor) -> torch.FloatTensor:
         """Calculates loss between prediction and ground truth on the pixels.
+
         :param prediction: Prediction of the model.
         :rtype: torch.Tensor
         :param ground_truth: Ground truth.
@@ -71,6 +74,7 @@ class LightningModel(pl.LightningModule):
 
     def forward_step(self, batch, batch_idx, state="Train") -> torch.Tensor:
         """Forward step of the model.
+
         :param batch: Batch of data.
         :rtype: Dict[str, torch.Tensor]
         :param batch_idx: Index of the batch.
@@ -89,6 +93,7 @@ class LightningModel(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         """Training step of the model.
+
         :param batch: Batch of data.
         :rtype: Dict[str, torch.Tensor]
         :param batch_idx: Index of the batch.
@@ -104,6 +109,7 @@ class LightningModel(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         """Validation step of the model.
+
         :param batch: Batch of data.
         :rtype: Dict[str, torch.Tensor]
         :param batch_idx: Index of the batch.
@@ -115,6 +121,7 @@ class LightningModel(pl.LightningModule):
 
     def configure_optimizers(self):
         """Configures optimizers and learning rate schedulers.
+
         :return: Optimizers and learning rate schedulers.
         :rtype: List[torch.optim.Optimizer], List[Dict[str, Any]]
         """

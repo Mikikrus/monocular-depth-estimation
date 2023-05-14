@@ -16,6 +16,7 @@ class TimmUniversalEncoder(nn.Module):
         output_stride: int = 32,
     ) -> None:
         """Initialize TimmUniversalEncoder.
+
         :param name: name of timm model
         :type name: str
         :param pretrained: load pretrained weights, defaults to True
@@ -53,6 +54,7 @@ class TimmUniversalEncoder(nn.Module):
 
     def forward(self, x: torch.Tensor) -> list[torch.Tensor]:
         """Forward pass.
+
         :param x: Input tensor.
         :rtype x: torch.Tensor
         :return: Features.
@@ -66,6 +68,7 @@ class TimmUniversalEncoder(nn.Module):
     @property
     def out_channels(self) -> list[int]:
         """Output channels.
+
         :return: Output channels.
         :rtype: list[int]
         """
@@ -74,6 +77,7 @@ class TimmUniversalEncoder(nn.Module):
     @property
     def output_stride(self) -> int:
         """Output stride.
+
         :return: Output stride.
         :rtype: int
         """

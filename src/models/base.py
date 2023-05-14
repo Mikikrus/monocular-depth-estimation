@@ -9,6 +9,7 @@ from .modules import Activation
 
 def initialize_decoder(module) -> None:
     """Sets initial weights for the decoder module.
+
     :param module: module to initialize
     :type module: nn.Module
     :return: None
@@ -32,6 +33,7 @@ def initialize_decoder(module) -> None:
 
 def initialize_head(module) -> None:
     """Sets initial weights for the head module.
+
     :param module: module to initialize
     :type module: nn.Module
     :return: None
@@ -49,6 +51,7 @@ class BaseModel(torch.nn.Module):
 
     def initialize(self) -> None:
         """Initializes model with default parameters
+
         :return: None
         :rtype: None
         """
@@ -57,6 +60,7 @@ class BaseModel(torch.nn.Module):
 
     def check_input_shape(self, x) -> None:
         """Check if input image height and width are divisible by `output_stride`
+
         :param x: 4D torch tensor with shape (batch_size, channels, height, width)
         :type x: torch.Tensor
         :raises RuntimeError: if input image height or width are not divisible by `output_stride`
@@ -75,6 +79,7 @@ class BaseModel(torch.nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Sequentially pass `x` trough model`s encoder, decoder and heads.
+
         :param x: 4D torch tensor with shape (batch_size, channels, height, width)
         :type x: torch.Tensor
         :return: model output
@@ -92,6 +97,7 @@ class BaseModel(torch.nn.Module):
     @torch.no_grad()
     def predict(self, x: torch.Tensor) -> torch.Tensor:
         """Inference method. Switch model to `eval` mode, call `.forward(x)` with `torch.no_grad()`
+
         :param x: 4D torch tensor with shape (batch_size, channels, height, width)
         :type x: torch.Tensor
         :return: prediction
@@ -117,6 +123,7 @@ class BaseHead(nn.Sequential):
         upsampling: int = 1,
     ) -> None:
         """Initialize head module.
+
         :param in_channels: number of input channels
         :type in_channels: int
         :param out_channels: number of output channels

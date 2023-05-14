@@ -4,6 +4,7 @@ import os
 
 def get_lr_scheduler_kwargs(data_dir: str, batch_size: int, accumulate_grad_batches: int) -> dict:
     """Calculates the learning rate scheduler kwargs.
+
     :param data_dir: Path to the data directory.
     :rtype: str
     :param batch_size: Batch size.

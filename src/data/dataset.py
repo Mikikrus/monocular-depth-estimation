@@ -22,8 +22,8 @@ class DepthEstimationDataset(Dataset):
         self.label_files = sorted(os.listdir(self.label_dir))
 
     def check_ordering(self) -> None:
-        """
-        Check that the ordering of the images and labels is the same.
+        """Check that the ordering of the images and labels is the same.
+
         :raises AssertionError: if the ordering is not the same
         :return: None
         :rtype: None
@@ -35,6 +35,7 @@ class DepthEstimationDataset(Dataset):
 
     def __len__(self) -> int:
         """Return the length of the dataset.
+
         :return: length of the dataset
         :rtype: int
         """
@@ -42,6 +43,7 @@ class DepthEstimationDataset(Dataset):
 
     def __getitem__(self, idx) -> Dict[str, torch.Tensor]:
         """Return the item at the given index.
+
         :param idx: index of the item
         :type idx: int
         :return: item at the given index

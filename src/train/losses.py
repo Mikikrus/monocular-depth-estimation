@@ -8,11 +8,11 @@ from torch import nn
 class L1Loss(nn.Module):
     """
     L1 loss with ignore regions.
-    normalize: normalization for surface normals
     """
 
     def __init__(self, normalize: bool = False, ignore_values: Union[int, float] = 0, reduction: str = "mean") -> None:
         """Initialize L1Loss.
+
         :param normalize: Normalize surface normals, defaults to False
         :type normalize: bool, optional
         :param ignore_values: Values to ignore, defaults to 0
@@ -29,6 +29,7 @@ class L1Loss(nn.Module):
 
     def forward(self, out: torch.Tensor, label: torch.Tensor) -> torch.Tensor:
         """Forward step of the loss.
+
         :param out: Output of the model.
         :rtype: torch.Tensor
         :param label: Ground truth.

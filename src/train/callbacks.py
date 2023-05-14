@@ -21,6 +21,7 @@ class ModelCheckpoint(callbacks.ModelCheckpoint):
         **kwargs,
     ) -> None:
         """Initialize the model checkpoint callback.
+
         :param save_top_k: number of best models to save
         :type save_top_k: int
         :param monitor: metric to monitor
@@ -46,6 +47,7 @@ class VisualizePrediction(callbacks.Callback):
 
     def __init__(self, num_samples: int = 3) -> None:
         """Initialize the visualize prediction callback.
+
         :param num_samples: number of samples to visualize
         :type num_samples: int
         :return: None
@@ -57,6 +59,7 @@ class VisualizePrediction(callbacks.Callback):
     def on_validation_end(self, trainer: pl.Trainer, pl_module: pl.LightningModule) -> None:
         """Visualize the prediction and ground truth for the first num_samples in the validation dataset. The images are
         logged to the wandb logger.
+
         :param trainer: PyTorch Lightning trainer.
         :rtype: pl.Trainer
         :param pl_module: PyTorch Lightning module.

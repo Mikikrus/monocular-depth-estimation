@@ -29,6 +29,7 @@ class DepthEstimationDataModule(pl.LightningDataModule):
 
     def setup(self, stage: Optional[str] = None) -> None:
         """Setup data module.
+
         :param stage: stage of the data module
         :type stage: Optional[str]
         :return: None
@@ -39,6 +40,7 @@ class DepthEstimationDataModule(pl.LightningDataModule):
 
     def train_dataloader(self) -> DataLoader:
         """Return train dataloader.
+
         :return: train dataloader
         :rtype: DataLoader
         """
@@ -51,6 +53,7 @@ class DepthEstimationDataModule(pl.LightningDataModule):
 
     def val_dataloader(self) -> DataLoader:
         """Return validation dataloader.
+
         :return: validation dataloader
         :rtype: DataLoader
         """

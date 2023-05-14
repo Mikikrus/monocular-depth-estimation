@@ -8,6 +8,7 @@ def get_encoder(
     name: str, in_channels: int = 3, depth: int = 5, weights: Optional[str] = None, output_stride: int = 32
 ):
     """Loads encoder by name from timm library.
+
     :param name: Name of the encoder.
     :rtype name: str
     :param in_channels: Number of input channels.

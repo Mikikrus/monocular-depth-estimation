@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.train package &mdash; Monocular Depth Estimation  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src.utils package" href="src.utils.html" />
+    <link rel="prev" title="src.models package" href="src.models.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Monocular Depth Estimation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">monocular-depth-estimation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="src.html">src package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="src.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="src.data.html">src.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.models.html">src.models package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">src.train package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.utils.html">src.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="src.html#module-src">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Monocular Depth Estimation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">monocular-depth-estimation</a></li>
+          <li class="breadcrumb-item"><a href="src.html">src package</a></li>
+      <li class="breadcrumb-item active">src.train package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/src.train.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="src-train-package">
+<h1>src.train package<a class="headerlink" href="#src-train-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-src.train.callbacks">
+<span id="src-train-callbacks-module"></span><h2>src.train.callbacks module<a class="headerlink" href="#module-src.train.callbacks" title="Permalink to this heading"></a></h2>
+<p>PyTorch Lightning callbacks. Callbacks are used to perform actions at various events during training and inference.
+For example, ModelCheckpoint callback saves the best model based on the validation loss.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.train.callbacks.ModelCheckpoint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.train.callbacks.</span></span><span class="sig-name descname"><span class="pre">ModelCheckpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Validation/Mean</span> <span class="pre">absolute</span> <span class="pre">error'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'min'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/content/checkpoints'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'base-{epoch:02d}-{Validation/Mean</span> <span class="pre">absolute</span> <span class="pre">error:.2f}'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.train.callbacks.ModelCheckpoint" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelCheckpoint</span></code></p>
+<p>Model checkpoint callback. Saves the best model based on the validation loss.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.train.callbacks.VisualizePrediction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.train.callbacks.</span></span><span class="sig-name descname"><span class="pre">VisualizePrediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.train.callbacks.VisualizePrediction" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Callback</span></code></p>
+<p>Visualize the prediction and ground truth for the first num_samples in the validation dataset.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.train.callbacks.VisualizePrediction.on_validation_end">
+<span class="sig-name descname"><span class="pre">on_validation_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LightningModule</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#src.train.callbacks.VisualizePrediction.on_validation_end" title="Permalink to this definition"></a></dt>
+<dd><p>Visualize the prediction and ground truth for the first num_samples in the validation dataset. The images are
+logged to the wandb logger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainer</strong> – PyTorch Lightning trainer.</p></li>
+<li><p><strong>pl_module</strong> – PyTorch Lightning module.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pl.Trainer</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pl.LightningModule</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-src.train.losses">
+<span id="src-train-losses-module"></span><h2>src.train.losses module<a class="headerlink" href="#module-src.train.losses" title="Permalink to this heading"></a></h2>
+<p>Loss functions for training.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.train.losses.L1Loss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.train.losses.</span></span><span class="sig-name descname"><span class="pre">L1Loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.train.losses.L1Loss" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>L1 loss with ignore regions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.train.losses.L1Loss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#src.train.losses.L1Loss.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Forward step of the loss.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>out</strong> – Output of the model.</p></li>
+<li><p><strong>label</strong> – Ground truth.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>torch.Tensor</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Loss value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-src.train.train">
+<span id="src-train-train-module"></span><h2>src.train.train module<a class="headerlink" href="#module-src.train.train" title="Permalink to this heading"></a></h2>
+<p>Training module. It contains LightningModel class that is a wrapper around the model that handles forward step,
+loss calculation, optimizer and learning rate scheduler.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.train.train.CallableObjectProtocol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.train.train.</span></span><span class="sig-name descname"><span class="pre">CallableObjectProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.train.train.CallableObjectProtocol" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+<p>Protocol for callable objects.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.train.train.LightningModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.train.train.</span></span><span class="sig-name descname"><span class="pre">LightningModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.train.train.CallableObjectProtocol" title="src.train.train.CallableObjectProtocol"><span class="pre">CallableObjectProtocol</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.train.train.LightningModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">LightningModule</span></code></p>
+<p>Lightning model class. It is a wrapper around the model that handles forward step, loss calculation, optimizer
+and learning rate scheduler.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.train.train.LightningModel.calculate_loss">
+<span class="sig-name descname"><span class="pre">calculate_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prediction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FloatTensor</span></span></span><a class="headerlink" href="#src.train.train.LightningModel.calculate_loss" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates loss between prediction and ground truth on the pixels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prediction</strong> – Prediction of the model.</p></li>
+<li><p><strong>ground_truth</strong> – Ground truth.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>torch.Tensor</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Loss value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.train.train.LightningModel.configure_optimizers">
+<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.train.train.LightningModel.configure_optimizers" title="Permalink to this definition"></a></dt>
+<dd><p>Configures optimizers and learning rate schedulers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optimizers and learning rate schedulers.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[torch.optim.Optimizer], List[Dict[str, Any]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.train.train.LightningModel.forward_step">
+<span class="sig-name descname"><span class="pre">forward_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Train'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#src.train.train.LightningModel.forward_step" title="Permalink to this definition"></a></dt>
+<dd><p>Forward step of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch</strong> – Batch of data.</p></li>
+<li><p><strong>batch_idx</strong> – Index of the batch.</p></li>
+<li><p><strong>state</strong> – State of the model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict[str, torch.Tensor]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Loss value.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.train.train.LightningModel.on_fit_start">
+<span class="sig-name descname"><span class="pre">on_fit_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#src.train.train.LightningModel.on_fit_start" title="Permalink to this definition"></a></dt>
+<dd><p>Sets seed for reproducibility.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.train.train.LightningModel.training_step">
+<span class="sig-name descname"><span class="pre">training_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.train.train.LightningModel.training_step" title="Permalink to this definition"></a></dt>
+<dd><p>Training step of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch</strong> – Batch of data.</p></li>
+<li><p><strong>batch_idx</strong> – Index of the batch.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict[str, torch.Tensor]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Loss value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.train.train.LightningModel.validation_step">
+<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.train.train.LightningModel.validation_step" title="Permalink to this definition"></a></dt>
+<dd><p>Validation step of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch</strong> – Batch of data.</p></li>
+<li><p><strong>batch_idx</strong> – Index of the batch.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict[str, torch.Tensor]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Loss value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-src.train.transforms">
+<span id="src-train-transforms-module"></span><h2>src.train.transforms module<a class="headerlink" href="#module-src.train.transforms" title="Permalink to this heading"></a></h2>
+<p>Example of transforms for training.</p>
+</section>
+<section id="module-src.train.utils">
+<span id="src-train-utils-module"></span><h2>src.train.utils module<a class="headerlink" href="#module-src.train.utils" title="Permalink to this heading"></a></h2>
+<p>Utility functions for training.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.train.utils.get_lr_scheduler_kwargs">
+<span class="sig-prename descclassname"><span class="pre">src.train.utils.</span></span><span class="sig-name descname"><span class="pre">get_lr_scheduler_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accumulate_grad_batches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#src.train.utils.get_lr_scheduler_kwargs" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the learning rate scheduler kwargs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_dir</strong> – Path to the data directory.</p></li>
+<li><p><strong>batch_size</strong> – Batch size.</p></li>
+<li><p><strong>accumulate_grad_batches</strong> – Accumulate gradient batches.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Learning rate scheduler kwargs.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.train">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src.train" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="src.models.html" class="btn btn-neutral float-left" title="src.models package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="src.utils.html" class="btn btn-neutral float-right" title="src.utils package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Maciej Filanowicz &amp; Mikołaj Kruś.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

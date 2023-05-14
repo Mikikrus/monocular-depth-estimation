@@ -11,6 +11,7 @@ ENCODERS: List[str] = ["tf_efficientnetv2_m.in21k_ft_in1k"]
 
 def _test_forward(model: torch.nn.Module, sample: torch.Tensor, test_shape: bool = False) -> None:
     """Tests forward method
+
     :param model: Model object
     :rtype model: torch.nn.Module
     :param sample: Tensor containing sample data
@@ -28,6 +29,7 @@ def _test_forward(model: torch.nn.Module, sample: torch.Tensor, test_shape: bool
 @pytest.mark.parametrize("encoder_name", ENCODERS)
 def test_model(model_class: torch.nn.Module, encoder_name: str) -> None:
     """Test whether forward method works for a given model.
+
     :param model_class: Model class
     :rtype model_class: torch.nn.Module
     :param encoder_name: Name of the model used as an encoder

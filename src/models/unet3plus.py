@@ -22,6 +22,7 @@ class DownBlock(nn.Module):
         attention_type: Optional[str] = None,
     ) -> None:
         """Initialize DownBlock.
+
         :param in_channels: number of input channels
         :type in_channels: int
         :param out_channels: number of output channels
@@ -49,6 +50,7 @@ class DownBlock(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass.
+
         :param x: 4D torch tensor with shape (batch_size, channels, height, width)
         :rtype x: torch.Tensor
         :return: output tensor
@@ -72,6 +74,7 @@ class ConstBlock(nn.Module):
         attention_type: Optional[str] = None,
     ):
         """Initialize ConstBlock.
+
         :param in_channels: number of input channels
         :type in_channels: int
         :param out_channels: number of output channels
@@ -96,6 +99,7 @@ class ConstBlock(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass.
+
         :param x: 4D torch tensor with shape (batch_size, channels, height, width)
         :rtype x: torch.Tensor
         :return: output tensor
@@ -130,6 +134,7 @@ class UpBlock(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass.
+
         :param x: input tensor
         :rtype x: torch.Tensor
         :return: output tensor
@@ -156,6 +161,7 @@ class DecoderBlock(nn.Module):
         attention_type: Optional[str] = None,
     ) -> None:
         """Initialize DecoderBlock.
+
         :param in_channels: list of encoder's output channel sizes
         :type in_channels: List[int]
         :param out_channels: list of decoders output channel sizes
@@ -217,6 +223,7 @@ class DecoderBlock(nn.Module):
 
     def forward(self, feature: torch.Tensor) -> torch.Tensor:
         """Forward pass.
+
         :param feature: 4D torch tensor with shape (batch_size, channels, height, width)
         :rtype feature: torch.Tensor
         :return: output tensor
@@ -239,6 +246,7 @@ class CenterBlock(nn.Sequential):
 
     def __init__(self, in_channels: int, out_channels: int, use_batchnorm: bool = True) -> None:
         """Initialize CenterBlock.
+
         :param in_channels: number of input channels
         :type in_channels: int
         :param out_channels: number of output channels
@@ -278,6 +286,7 @@ class Unet3PlusDecoder(nn.Module):
         center: bool = False,
     ) -> None:
         """Initialize Unet3PlusDecoder.
+
         :param encoder_channels: list of encoder's output channel sizes
         :type encoder_channels: List[int]
         :param decoder_channels: list of decoders output channel sizes
@@ -333,6 +342,7 @@ class Unet3PlusDecoder(nn.Module):
 
     def forward(self, *features: List[torch.Tensor]) -> torch.Tensor:
         """Forward pass.
+
         :param features: input tensors
         :rtype features: List[torch.Tensor]
         :return: output tensor
@@ -379,6 +389,7 @@ class Unet3Plus(BaseModel):
         activation: Optional[Union[str, Callable]] = None,  # type: ignore
     ) -> None:
         """Initialize Unet3Plus.
+
         :param encoder_name: name of classification model (without last dense layers) used as feature
             extractor to build final model.
         :type encoder_name: str

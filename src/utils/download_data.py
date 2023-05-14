@@ -9,6 +9,7 @@ from src import IS_COLAB
 
 def _download_data(destination_path: str, file_id: str, force: bool = False) -> None:
     """Download data from Google Drive using gdown.
+
     :param destination_path: path to download data to
     :type destination_path: str
     :param file_id: id of the file to download
@@ -35,6 +36,7 @@ def _download_data(destination_path: str, file_id: str, force: bool = False) -> 
 
 def _copy_from_drive(destination_path: str, source_path: str, force: bool = False) -> None:
     """Copies the data from google drive. Function used in Google Colab.
+
     :param destination_path: path to download data to
     :type destination_path: str
     :param source_path: path to download data from
@@ -63,6 +65,7 @@ def download_dataset(
     force: bool = False,
 ) -> None:
     """Download data using gdown, when using local machine, copy from Google Drive when using Google Colab.
+
     :param destination_path: path to download data to
     :type destination_path: str
     :param source_path: path to download data from

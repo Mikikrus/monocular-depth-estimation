@@ -18,6 +18,7 @@ class Conv2dReLU(nn.Sequential):
         use_batchnorm: bool = True,
     ):
         """Initialize Conv2dReLU module.
+
         :param in_channels: number of input channels
         :type in_channels: int
         :param out_channels: number of output channels
@@ -56,6 +57,7 @@ class SCSEModule(nn.Module):
 
     def __init__(self, in_channels: int, reduction: int = 16) -> None:
         """Initialize SCSEModule.
+
         :param in_channels: number of input channels
         :type in_channels: int
         :param reduction: reduction ratio, defaults to 16
@@ -75,6 +77,7 @@ class SCSEModule(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass.
+
         :param x: 4D torch tensor with shape (batch_size, channels, height, width)
         :type x: torch.Tensor
         :return: Features multiplied by channel and spatial attention tensors.
@@ -88,6 +91,7 @@ class ArgMax(nn.Module):
 
     def __init__(self, dim: Optional[int] = None) -> None:
         """Initialize ArgMax module.
+
         :param dim: dimension to apply argmax, defaults to None
         :type dim: Optional[int], optional
         :return: None
@@ -98,6 +102,7 @@ class ArgMax(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass.
+
         :param x: 4D torch tensor with shape (batch_size, channels, height, width)
         :type x: torch.Tensor
         :return: Features with applied argmax along the specified dimension
@@ -111,6 +116,7 @@ class Clamp(nn.Module):
 
     def __init__(self, min: Union[int, float] = 0, max: Union[int, float] = 1) -> None:
         """Initialize Clamp module.
+
         :param min: minimum value, defaults to 0
         :type min: Union[int, float], optional
         :param max: maximum value, defaults to 1
@@ -123,6 +129,7 @@ class Clamp(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass.
+
         :param x: 4D torch tensor with shape (batch_size, channels, height, width)
         :type x: torch.Tensor
         :return: Features with applied clamp
@@ -136,6 +143,7 @@ class Activation(nn.Module):
 
     def __init__(self, name: str, **params) -> None:
         """Initialize Activation module.
+
         :param name: name of the activation function
         :type name: str
         :param params: parameters for the activation function
@@ -173,6 +181,7 @@ class Activation(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass.
+
         :param x: 4D torch tensor with shape (batch_size, channels, height, width)
         :type x: torch.Tensor
         :return: Features with applied activation function
@@ -186,6 +195,7 @@ class Attention(nn.Module):
 
     def __init__(self, name: str, **params) -> None:
         """Initialize Attention module.
+
         :param name: name of the attention module
         :type name: str
         :param params: parameters for the attention module
@@ -204,6 +214,7 @@ class Attention(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass.
+
         :param x: 4D torch tensor with shape (batch_size, channels, height, width)
         :type x: torch.Tensor
         :return: Features with applied attention module
