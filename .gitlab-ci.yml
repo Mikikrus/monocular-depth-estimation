@@ -1,0 +1,37 @@
+image: python:3.9
+
+stages:
+  - test
+  - deploy
+variables:
+  MAIN_DIR: "./src/"
+before_script:
+  - python -V
+  - pip install virtualenv
+  - virtualenv env
+  - source env/bin/activate
+  - pip install .
+test:run-quality-check:
+  stage: test
+  script:
+    - python -m isort --profile black --check-only "$MAIN_DIR"
+    - python -m flake8 --ignore=E203,E231 --max-line-length 120 --max-complexity 10 "$MAIN_DIR"
+    - python -m black --line-length 120 --target-version py39 --check --diff "$MAIN_DIR"
+    - python -m pylint --rcfile=pylint.ini $(find "$MAIN_DIR" -type f -name "*.py") |& tee ./pylint_report.txt ; ( exit ${PIPESTATUS} )
+    - python -m mypy --junit-xml ./tests/reports/mypy_errors_junit.xml "$MAIN_DIR"
+  only:
+    refs:
+      - merge_requests
+    variables:
+      - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+deploy:
+  stage: deploy
+  script:
+    - python setup.py sdist bdist_wheel
+    - pip install twine
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+  artifacts:
+    paths:
+      - dist/*.whl
+  only:
+    - tags
