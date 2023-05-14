@@ -4,3 +4,5 @@ wandb==0.15.2
 timm==0.9.1
 sphinx
 sphinx_rtd_theme
+pytest
+matplotlib
