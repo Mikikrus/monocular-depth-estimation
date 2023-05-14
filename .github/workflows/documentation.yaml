@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Generate documentation
-        run: sudo ./scripts/docs_generator.sh ${{ env.MODULE_PATHS }}
+        run: ./scripts/docs_generator.sh ${{ env.MODULE_PATHS }}
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
