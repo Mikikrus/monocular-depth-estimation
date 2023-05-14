@@ -20,6 +20,22 @@ class ModelCheckpoint(callbacks.ModelCheckpoint):
         filename: str = "base-{epoch:02d}-{Validation/Mean absolute error:.2f}",
         **kwargs,
     ) -> None:
+        """Initialize the model checkpoint callback.
+        :param save_top_k: number of best models to save
+        :type save_top_k: int
+        :param monitor: metric to monitor
+        :type monitor: str
+        :param mode: mode of the metric
+        :type mode: str
+        :param dir_path: directory path to save the model
+        :type dir_path: str
+        :param filename: filename to save the model
+        :type filename: str
+        :param kwargs: additional arguments
+        :type kwargs: Any
+        :return: None
+        :rtype: None
+        """
         super().__init__(
             save_top_k=save_top_k, monitor=monitor, mode=mode, dirpath=dir_path, filename=filename, **kwargs
         )
@@ -29,6 +45,12 @@ class VisualizePrediction(callbacks.Callback):
     """Visualize the prediction and ground truth for the first num_samples in the validation dataset."""
 
     def __init__(self, num_samples: int = 3) -> None:
+        """Initialize the visualize prediction callback.
+        :param num_samples: number of samples to visualize
+        :type num_samples: int
+        :return: None
+        :rtype: None
+        """
         super().__init__()
         self.num_samples = num_samples
 

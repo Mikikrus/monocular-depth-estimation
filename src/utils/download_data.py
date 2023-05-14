@@ -46,10 +46,9 @@ def _copy_from_drive(destination_path: str, source_path: str, force: bool = Fals
     if not os.path.exists(destination_path) or force:
         from google.colab import drive
 
+        drive.mount("/content/drive")
         if not os.path.exists(source_path):
             raise ValueError(f"File {source_path} does not exist!")
-
-        drive.mount("/content/drive")
         shutil.copy(source_path, "data.zip")
         # unzip data
         subprocess.run(["unzip", "-q", "data.zip", "-d", destination_path])

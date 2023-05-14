@@ -9,7 +9,17 @@ from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 
 
 class CallableObjectProtocol(Protocol):
+    """Protocol for callable objects."""
+
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        """Call method of the callable object.
+        :param args: Arguments.
+        :type args: Any
+        :param kwargs: Keyword arguments.
+        :type kwargs: Any
+        :return: Result of the call.
+        :rtype: Any
+        """
         ...
 
 
@@ -21,10 +31,24 @@ class LightningModel(pl.LightningModule):
         self,
         model: nn.Module,
         optimizer: str,
-        learning_rate,
+        learning_rate: float,
         loss: CallableObjectProtocol,
         lr_scheduler_params: Union[dict, None],
     ) -> None:
+        """Initialize LightningModel.
+        :param model: Model.
+        :type model: nn.Module
+        :param optimizer: Name of one of the torch optimizers.
+        :type optimizer: str
+        :param learning_rate: Learning rate.
+        :type learning_rate: float
+        :param loss: Loss function.
+        :type loss: CallableObjectProtocol
+        :param lr_scheduler_params: Parameters for the learning rate scheduler, defaults to None
+        :type lr_scheduler_params: Union[dict, None], optional
+        :return: None
+        :rtype: None
+        """
         super().__init__()
         self.model = model
         self.optimizer = getattr(torch.optim, optimizer)
@@ -35,17 +59,14 @@ class LightningModel(pl.LightningModule):
         self.lr_scheduler_params = lr_scheduler_params
 
     def calculate_loss(self, prediction: torch.Tensor, ground_truth: torch.Tensor) -> torch.FloatTensor:
-        """Calculates loss between prediction and ground truth on the pixels where ground truth is greater than zero.
+        """Calculates loss between prediction and ground truth on the pixels.
         :param prediction: Prediction of the model.
         :rtype: torch.Tensor
         :param ground_truth: Ground truth.
         :rtype: torch.Tensor
         :return: Loss value.
         """
-        mask = ground_truth > 0
-        masked_predictions = torch.masked_select(prediction, mask)
-        masked_ground_truth = torch.masked_select(ground_truth, mask)
-        loss = self.loss(masked_predictions, masked_ground_truth)
+        loss = self.loss(prediction, ground_truth)
         return loss
 
     def forward_step(self, batch, batch_idx, state="Train") -> torch.Tensor:

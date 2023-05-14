@@ -1,4 +1,6 @@
+"""Pytorch dataset for depth estimation."""
 import os
+from typing import Dict
 
 import numpy as np
 import torch
@@ -6,6 +8,8 @@ from torch.utils.data import Dataset
 
 
 class DepthEstimationDataset(Dataset):
+    """Dataset for depth estimation."""
+
     def __init__(self, data_dir: str, split: str = "train", transforms=None) -> None:
         self.data_dir = data_dir
         self.split = split
@@ -36,7 +40,13 @@ class DepthEstimationDataset(Dataset):
         """
         return len(self.image_files)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx) -> Dict[str, torch.Tensor]:
+        """Return the item at the given index.
+        :param idx: index of the item
+        :type idx: int
+        :return: item at the given index
+        :rtype: Dict[str, np.ndarray]
+        """
         img_path = os.path.join(self.image_dir, self.image_files[idx])
         depth_path = os.path.join(self.depth_dir, self.depth_files[idx])
         label_path = os.path.join(self.label_dir, self.label_files[idx])
