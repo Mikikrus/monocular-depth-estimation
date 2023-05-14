@@ -2,16 +2,22 @@ name: Docs
 on: [push, pull_request, workflow_dispatch]
 permissions:
     contents: write
+
+env:
+  MODULE_PATHS: src
+
 jobs:
   docs:
     runs-on: ubuntu-latest
+    permissions:
+      contents: 'write'
+      id-token: 'write'
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-
       - name: Generate documentation
         run: ./scripts/docs_generator.sh ${{ env.MODULE_PATHS }}
 
