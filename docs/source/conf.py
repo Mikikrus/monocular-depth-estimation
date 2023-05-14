@@ -29,6 +29,6 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store","setup.py"]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-print(os.getcwd())
+# print(os.getcwd())
 html_theme = "sphinx_rtd_theme"
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
