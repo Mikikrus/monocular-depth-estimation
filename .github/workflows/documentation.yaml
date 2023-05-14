@@ -12,18 +12,18 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Sphinx build
-        run: |
-          sphinx-build docs .
-      - name: Deploy
+      - name: Generate documentation
+        run: ./scripts/docs_generator.sh ${{ env.MODULE_PATHS }}
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          file_pattern: docs/build
+          commit_message: "docs: generation of documentation"
+
+      - name: Publish to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
-        if:
-          contains('
-          refs/heads/main
-          refs/heads/develop
-          ', github.ref)
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          force_orphan: true
+          publish_dir: docs/build
