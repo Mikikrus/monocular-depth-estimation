@@ -56,7 +56,7 @@ class TimmUniversalEncoder(nn.Module):
         """Forward pass.
 
         :param x: Input tensor.
-        :rtype x: torch.Tensor
+        :type x: torch.Tensor
         :return: Features.
         :rtype: list[torch.Tensor]"""
         features = self.model(x)

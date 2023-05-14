@@ -6,11 +6,11 @@ def get_lr_scheduler_kwargs(data_dir: str, batch_size: int, accumulate_grad_batc
     """Calculates the learning rate scheduler kwargs.
 
     :param data_dir: Path to the data directory.
-    :rtype: str
+    :type data_dir: str
     :param batch_size: Batch size.
-    :rtype: int
+    :type batch_size: int
     :param accumulate_grad_batches: Accumulate gradient batches.
-    :rtype: int
+    :type accumulate_grad_batches: int
     :return: Learning rate scheduler kwargs.
     :rtype: dict
     """

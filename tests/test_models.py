@@ -31,7 +31,7 @@ def test_model(model_class: torch.nn.Module, encoder_name: str) -> None:
     """Test whether forward method works for a given model.
 
     :param model_class: Model class
-    :rtype model_class: torch.nn.Module
+    :type model_class: torch.nn.Module
     :param encoder_name: Name of the model used as an encoder
     :rtype encoder_name: str
     """

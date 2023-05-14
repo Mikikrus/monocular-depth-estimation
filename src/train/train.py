@@ -64,9 +64,9 @@ class LightningModel(pl.LightningModule):
         """Calculates loss between prediction and ground truth on the pixels.
 
         :param prediction: Prediction of the model.
-        :rtype: torch.Tensor
+        :type prediction: torch.Tensor
         :param ground_truth: Ground truth.
-        :rtype: torch.Tensor
+        :type prediction: torch.Tensor
         :return: Loss value.
         """
         loss = self.loss(prediction, ground_truth)
@@ -76,11 +76,11 @@ class LightningModel(pl.LightningModule):
         """Forward step of the model.
 
         :param batch: Batch of data.
-        :rtype: Dict[str, torch.Tensor]
+        :type batch: Dict[str, torch.Tensor]
         :param batch_idx: Index of the batch.
-        :rtype: int
+        :type batch_idx: int
         :param state: State of the model.
-        :rtype: str
+        :type state: str
         :return: Loss value.
         :rtype: torch.Tensor
         """
@@ -95,9 +95,9 @@ class LightningModel(pl.LightningModule):
         """Training step of the model.
 
         :param batch: Batch of data.
-        :rtype: Dict[str, torch.Tensor]
+        :type batch: Dict[str, torch.Tensor]
         :param batch_idx: Index of the batch.
-        :rtype: int
+        :type batch_idx: int
         :return: Loss value.
         :rtype: torch.Tensor
         """
@@ -111,9 +111,9 @@ class LightningModel(pl.LightningModule):
         """Validation step of the model.
 
         :param batch: Batch of data.
-        :rtype: Dict[str, torch.Tensor]
+        :type batch: Dict[str, torch.Tensor]
         :param batch_idx: Index of the batch.
-        :rtype: int
+        :type batch_idx: int
         :return: Loss value.
         :rtype: torch.Tensor
         """

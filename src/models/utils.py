@@ -10,15 +10,15 @@ def get_encoder(
     """Loads encoder by name from timm library.
 
     :param name: Name of the encoder.
-    :rtype name: str
+    :type name: str
     :param in_channels: Number of input channels.
-    :rtype in_channels: int
+    :type in_channels: int
     :param depth: Depth of the encoder.
-    :rtype depth: int
+    :type depth: int
     :param weights: Pretrained weights.
-    :rtype weights: str
+    :type weights: str
     :param output_stride: Output stride of the encoder.
-    :rtype output_stride: int
+    :type output_stride: int
     :return: Encoder.
     :rtype: nn.Module
     """

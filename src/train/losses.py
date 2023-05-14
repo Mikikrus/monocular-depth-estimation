@@ -31,9 +31,9 @@ class L1Loss(nn.Module):
         """Forward step of the loss.
 
         :param out: Output of the model.
-        :rtype: torch.Tensor
+        :type out: torch.Tensor
         :param label: Ground truth.
-        :rtype: torch.Tensor
+        :type label: torch.Tensor
         :return: Loss value.
         :rtype: torch.Tensor
         """

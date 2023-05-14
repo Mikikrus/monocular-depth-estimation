@@ -52,7 +52,7 @@ class DownBlock(nn.Module):
         """Forward pass.
 
         :param x: 4D torch tensor with shape (batch_size, channels, height, width)
-        :rtype x: torch.Tensor
+        :type x: torch.Tensor
         :return: output tensor
         :rtype: torch.Tensor
         """
@@ -101,7 +101,7 @@ class ConstBlock(nn.Module):
         """Forward pass.
 
         :param x: 4D torch tensor with shape (batch_size, channels, height, width)
-        :rtype x: torch.Tensor
+        :type x: torch.Tensor
         :return: output tensor
         :rtype: torch.Tensor
         """
@@ -136,7 +136,7 @@ class UpBlock(nn.Module):
         """Forward pass.
 
         :param x: input tensor
-        :rtype x: torch.Tensor
+        :type x: torch.Tensor
         :return: output tensor
         :rtype: torch.Tensor
         """
@@ -225,7 +225,7 @@ class DecoderBlock(nn.Module):
         """Forward pass.
 
         :param feature: 4D torch tensor with shape (batch_size, channels, height, width)
-        :rtype feature: torch.Tensor
+        :type feature: torch.Tensor
         :return: output tensor
         :rtype: torch.Tensor
         """
@@ -344,7 +344,7 @@ class Unet3PlusDecoder(nn.Module):
         """Forward pass.
 
         :param features: input tensors
-        :rtype features: List[torch.Tensor]
+        :type features: List[torch.Tensor]
         :return: output tensor
         :rtype: torch.Tensor
         """
