@@ -1,10 +1,9 @@
-name: Docs
-on: [push, pull_request, workflow_dispatch]
-permissions:
-    contents: write
+name: Build and Deploy Documentation
 
-env:
-  MODULE_PATHS: src
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   docs:
@@ -15,20 +14,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
+        -
       - name: Install dependencies
         run: pip install -r requirements.txt
-      - name: Generate documentation
-        run: ./scripts/docs_generator.sh ${{ env.MODULE_PATHS }}
 
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          file_pattern: docs
-          commit_message: "docs: generation of documentation"
+      - name: Generate documentation
+        run: ./scripts/docs_generator.sh
 
       - name: Publish to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs
+          publish_dir: ./docs/build
