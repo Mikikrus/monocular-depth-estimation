@@ -1,0 +1,6 @@
+./data
+.mypy_cache
+.pytest_cache
+wheels
+build
+*.egg-info
