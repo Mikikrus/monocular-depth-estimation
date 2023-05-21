@@ -1,153 +1,18 @@
 """Module containing UNet3Plus model definition."""
 
-from typing import Callable, List, Optional, Union
+from typing import Any, Callable, List, Optional, Union
 
 import torch
 from torch import nn
 
 import src.models.modules as md
 from src.models.base import BaseHead, BaseModel
+from src.models.unet_blocks import CenterBlock, ConstBlock, DownBlock, UpBlock
 from src.models.utils import get_encoder
 
 
-class DownBlock(nn.Module):
-    """Downscaling with max pooling followed by the 3x3 convolution and attention block."""
-
-    def __init__(
-        self,
-        in_channels: int,
-        out_channels: int,
-        scale: int,
-        use_batchnorm: bool = True,
-        attention_type: Optional[str] = None,
-    ) -> None:
-        """Initialize DownBlock.
-
-        :param in_channels: number of input channels
-        :type in_channels: int
-        :param out_channels: number of output channels
-        :type out_channels: int
-        :param scale: downscaling factor
-        :type scale: int
-        :param use_batchnorm: if True, use BatchNorm2d before ReLU activation, defaults to True
-        :type use_batchnorm: bool, optional
-        :param attention_type: attention block type, defaults to None
-        :type attention_type: Optional[str], optional
-        :return: None
-        :rtype: None
-        """
-        super().__init__()
-        self.maxpool = nn.MaxPool2d(scale, scale, ceil_mode=True)
-
-        self.conv1 = md.Conv2dReLU(
-            in_channels,
-            out_channels,
-            kernel_size=3,
-            padding=1,
-            use_batchnorm=use_batchnorm,
-        )
-        self.attention1 = md.Attention(attention_type, in_channels=out_channels)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Forward pass.
-
-        :param x: 4D torch tensor with shape (batch_size, channels, height, width)
-        :type x: torch.Tensor
-        :return: output tensor
-        :rtype: torch.Tensor
-        """
-        x = self.maxpool(x)
-        x = self.conv1(x)
-        x = self.attention1(x)
-        return x
-
-
-class ConstBlock(nn.Module):
-    """Convolutional block with kernel size 3x3 with padding 1."""
-
-    def __init__(
-        self,
-        in_channels: int,
-        out_channels: int,
-        scale: Optional[int] = None,
-        use_batchnorm: bool = True,
-        attention_type: Optional[str] = None,
-    ):
-        """Initialize ConstBlock.
-
-        :param in_channels: number of input channels
-        :type in_channels: int
-        :param out_channels: number of output channels
-        :type out_channels: int
-        :param scale: downscaling factor, defaults to None
-        :type scale: Optional[int], optional
-        :param use_batchnorm: if True, use BatchNorm2d before ReLU activation, defaults to True
-        :type use_batchnorm: bool, optional
-        :param attention_type: attention block type, defaults to None
-        :type attention_type: Optional[str], optional
-        :return: None
-        :rtype: None
-        """
-        super().__init__()
-        self.conv1 = md.Conv2dReLU(
-            in_channels,
-            out_channels,
-            kernel_size=3,
-            padding=1,
-            use_batchnorm=use_batchnorm,
-        )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Forward pass.
-
-        :param x: 4D torch tensor with shape (batch_size, channels, height, width)
-        :type x: torch.Tensor
-        :return: output tensor
-        :rtype: torch.Tensor
-        """
-        x = self.conv1(x)
-        return x
-
-
-class UpBlock(nn.Module):
-    """Upscaling with bilinear interpolation followed by the 3x3 convolution and attention block."""
-
-    def __init__(
-        self,
-        in_channels,
-        out_channels,
-        scale,
-        use_batchnorm=True,
-        attention_type=None,
-    ):
-        super().__init__()
-        self.upsample = nn.Upsample(scale_factor=scale, mode="bilinear")
-
-        self.conv1 = md.Conv2dReLU(
-            in_channels,
-            out_channels,
-            kernel_size=3,
-            padding=1,
-            use_batchnorm=use_batchnorm,
-        )
-        self.attention1 = md.Attention(attention_type, in_channels=out_channels)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Forward pass.
-
-        :param x: input tensor
-        :type x: torch.Tensor
-        :return: output tensor
-        :rtype: torch.Tensor
-        """
-        x = self.upsample(x)
-        x = self.conv1(x)
-        x = self.attention1(x)
-        return x
-
-
 class DecoderBlock(nn.Module):
-    """Decoder block. Performs upscaling, concatenation with encoder output, 3x3 convolution and attention block."""
+    """Decoder block. Performs up-scaling, concatenation with encoder output, 3x3 convolution and attention block."""
 
     def __init__(
         self,
@@ -185,24 +50,37 @@ class DecoderBlock(nn.Module):
 
         scale = max_down_scale
         blocks = []
-        kwargs = dict(use_batchnorm=use_batchnorm, attention_type=attention_type)
 
         self.num_concat_blocks = num_concat_blocks
-        self.up_channel = out_channels[output_index] * self.num_concat_blocks
-
-        # pos = len(in_channels) - scale - 1
+        self.up_channel: int = out_channels[output_index] * self.num_concat_blocks
 
         prev_ind = 1  # used for calculating index of input channels for UpBlock
 
         # creating blocks with respect to the scale
         for i in range(self.num_concat_blocks):
             if scale > 0:
-                block = DownBlock(in_channels[i], out_channels[output_index], pow(2, scale), **kwargs)
+                block: Any = DownBlock(
+                    in_channels[i],
+                    out_channels[output_index],
+                    pow(2, scale),
+                    use_batchnorm=use_batchnorm,
+                    attention_type=attention_type,
+                )
             elif scale == 0:
-                block = ConstBlock(in_channels[i], out_channels[output_index], 0, **kwargs)
+                block: Any = ConstBlock(
+                    in_channels[i],
+                    out_channels[output_index],
+                    0,
+                    use_batchnorm=use_batchnorm,
+                    attention_type=attention_type,
+                )
             else:
-                block = UpBlock(
-                    previous_channels[output_index - prev_ind], out_channels[output_index], pow(2, abs(scale)), **kwargs
+                block: Any = UpBlock(
+                    previous_channels[output_index - prev_ind],
+                    out_channels[output_index],
+                    pow(2, abs(scale)),
+                    use_batchnorm=use_batchnorm,
+                    attention_type=attention_type,
                 )
                 prev_ind += 1
 
@@ -219,7 +97,8 @@ class DecoderBlock(nn.Module):
             padding=1,
             use_batchnorm=use_batchnorm,
         )
-        self.attention_cat = md.Attention(attention_type, in_channels=self.up_channel)
+        kwargs = {"in_channels": self.up_channel}
+        self.attention_cat = md.Attention(attention_type, **kwargs)
 
     def forward(self, feature: torch.Tensor) -> torch.Tensor:
         """Forward pass.
@@ -239,38 +118,6 @@ class DecoderBlock(nn.Module):
         final = self.attention_cat(final)
 
         return final
-
-
-class CenterBlock(nn.Sequential):
-    """Center block. This block does not change the size of the signal, only the number of features is changed."""
-
-    def __init__(self, in_channels: int, out_channels: int, use_batchnorm: bool = True) -> None:
-        """Initialize CenterBlock.
-
-        :param in_channels: number of input channels
-        :type in_channels: int
-        :param out_channels: number of output channels
-        :type out_channels: int
-        :param use_batchnorm: if True, use BatchNorm2d before ReLU activation, defaults to True
-        :type use_batchnorm: bool, optional
-        :return: None
-        :rtype: None
-        """
-        conv1 = md.Conv2dReLU(
-            in_channels,
-            out_channels,
-            kernel_size=3,
-            padding=1,
-            use_batchnorm=use_batchnorm,
-        )
-        conv2 = md.Conv2dReLU(
-            out_channels,
-            out_channels,
-            kernel_size=3,
-            padding=1,
-            use_batchnorm=use_batchnorm,
-        )
-        super().__init__(conv1, conv2)
 
 
 class Unet3PlusDecoder(nn.Module):
@@ -321,12 +168,9 @@ class Unet3PlusDecoder(nn.Module):
         )  # first tensor as it comes from CenterBlock, hence no concatenation
 
         if center:
-            self.center = CenterBlock(head_channels, head_channels, use_batchnorm=use_batchnorm)
+            self.center: Any = CenterBlock(head_channels, head_channels, use_batchnorm=use_batchnorm)
         else:
-            self.center = nn.Identity()
-
-        # combine decoder keyword arguments
-        kwargs = dict(use_batchnorm=use_batchnorm, attention_type=attention_type)
+            self.center: Any = nn.Identity()
 
         stages = []
         self.scale = n_blocks - 2
@@ -334,7 +178,14 @@ class Unet3PlusDecoder(nn.Module):
         # Blocks for every stage is generated
         for i in range(n_blocks):
             stage = DecoderBlock(
-                in_channels, out_channels, previous_channels, self.scale - i, n_blocks, i + 1, **kwargs
+                in_channels,
+                out_channels,
+                previous_channels,
+                self.scale - i,
+                n_blocks,
+                i + 1,
+                use_batchnorm=use_batchnorm,
+                attention_type=attention_type,
             )
             stages.append(stage)
 
@@ -361,7 +212,7 @@ class Unet3PlusDecoder(nn.Module):
         decoded_features = [x]
 
         # tensors are calculated for each stage
-        for i, stage in enumerate(self.stages):
+        for stage in self.stages:
             total_features = features_in_scope.copy()
             total_features.extend(decoded_features)
             x = stage(total_features)
@@ -385,8 +236,8 @@ class Unet3Plus(BaseModel):
         decoder_channels: tuple = (256, 128, 64, 32, 16),
         decoder_attention_type: Optional[str] = None,
         in_channels: int = 3,
-        classes: int = 1,
-        activation: Optional[Union[str, Callable]] = None,  # type: ignore
+        classes: int = 19,
+        activation: Optional[Union[str, Callable]] = None,
     ) -> None:
         """Initialize Unet3Plus.
 
@@ -423,21 +274,33 @@ class Unet3Plus(BaseModel):
             weights=encoder_weights,
         )
 
-        self.decoder = Unet3PlusDecoder(
+        self.depth_decoder = Unet3PlusDecoder(
             encoder_channels=self.encoder.out_channels,
-            decoder_channels=decoder_channels,
+            decoder_channels=list(decoder_channels),
             n_blocks=encoder_depth,
             use_batchnorm=decoder_use_batchnorm,
             center=bool(encoder_name.startswith("vgg")),
             attention_type=decoder_attention_type,
         )
-
-        self.head = BaseHead(
+        self.seg_decoder = Unet3PlusDecoder(
+            encoder_channels=self.encoder.out_channels,
+            decoder_channels=list(decoder_channels),
+            n_blocks=encoder_depth,
+            use_batchnorm=decoder_use_batchnorm,
+            center=bool(encoder_name.startswith("vgg")),
+            attention_type=decoder_attention_type,
+        )
+        self.depth_head = BaseHead(
+            in_channels=decoder_channels[encoder_depth - 1] * encoder_depth,
+            out_channels=1,
+            activation_name=activation,
+            kernel_size=3,
+        )
+        self.seg_head = BaseHead(
             in_channels=decoder_channels[encoder_depth - 1] * encoder_depth,
             out_channels=classes,
             activation_name=activation,
             kernel_size=3,
         )
-
         self.name = f"unet3plus-{encoder_name}"
         self.initialize()

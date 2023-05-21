@@ -7,25 +7,25 @@ transforms = albumentations.Compose(
     [
         albumentations.ToFloat(),
         albumentations.Flip(p=0.5),
-        albumentations.OneOf(
-            [
-                albumentations.ElasticTransform(alpha=1, sigma=20, alpha_affine=10),
-                albumentations.GridDistortion(num_steps=6, distort_limit=0.1),
-                albumentations.OpticalDistortion(distort_limit=0.05, shift_limit=0.05),
-            ],
-            p=0.2,
-        ),
-        albumentations.ColorJitter(brightness=0.05, contrast=0.05, saturation=0.05, hue=0.05, p=0.5),
-        albumentations.core.composition.PerChannel(
-            albumentations.OneOf(
-                [
-                    albumentations.MotionBlur(p=0.05),
-                    albumentations.MedianBlur(blur_limit=3, p=0.05),
-                    albumentations.Blur(blur_limit=3, p=0.05),
-                ]
-            ),
-            p=1.0,
-        ),
+        # albumentations.OneOf(
+        #     [
+        #         albumentations.ElasticTransform(alpha=1, sigma=20, alpha_affine=10),
+        #         albumentations.GridDistortion(num_steps=6, distort_limit=0.1),
+        #         albumentations.OpticalDistortion(distort_limit=0.05, shift_limit=0.05),
+        #     ],
+        #     p=0.2,
+        # ),
+        # albumentations.ColorJitter(brightness=0.05, contrast=0.05, saturation=0.05, hue=0.05, p=0.5),
+        # albumentations.core.composition.PerChannel(
+        #     albumentations.OneOf(
+        #         [
+        #             albumentations.MotionBlur(p=0.05),
+        #             albumentations.MedianBlur(blur_limit=3, p=0.05),
+        #             albumentations.Blur(blur_limit=3, p=0.05),
+        #         ]
+        #     ),
+        #     p=1.0,
+        # ),
         albumentations.OneOf(
             [
                 albumentations.CoarseDropout(

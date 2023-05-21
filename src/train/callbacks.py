@@ -69,10 +69,16 @@ class VisualizePrediction(callbacks.Callback):
             sample_data = trainer.datamodule.val_subset[prediction_id]
             image = torch.unsqueeze(sample_data["image"], 0).float().to(DEVICE)
             depth_image = torch.unsqueeze(sample_data["depth_image"], 0).float().to(DEVICE)
+            segmentation_labels = torch.unsqueeze(sample_data["label"], 0).float().to(DEVICE)
             with torch.no_grad():
-                prediction = trainer.model.model(image).detach().cpu()
-            fig, ax = plt.subplots(1, ncols=2, figsize=(15, 5))
-            ax[0].imshow(depth_image.squeeze().cpu(), cmap="hot")
-            ax[1].imshow(prediction.squeeze().cpu(), cmap="hot")
+                prediction = trainer.model.model(image)
+                segmentation_output = torch.argmax(prediction["seg_mask"].detach().cpu(), dim=1)
+                depth_output = prediction["depth_mask"].detach().cpu()
+
+            fig, ax = plt.subplots(2, ncols=2, figsize=(15, 5))
+            ax[0,0].imshow(depth_image.squeeze().cpu(), cmap="hot")
+            ax[0,1].imshow(depth_output.squeeze().cpu(), cmap="hot")
+            ax[1,0].imshow(segmentation_labels.squeeze().cpu(), cmap="hot")
+            ax[1,1].imshow(segmentation_output.squeeze().cpu(), cmap="hot")
             trainer.logger.experiment.log({f"prediction {prediction_id}": fig})
             plt.close(fig)
