@@ -204,7 +204,7 @@ class Unet(BaseModel):
             encoder_name,
             in_channels=in_channels,
             depth=encoder_depth,
-            weights=encoder_weights,
+            pretrained=True,
         )
 
         self.depth_decoder = UnetDecoder(

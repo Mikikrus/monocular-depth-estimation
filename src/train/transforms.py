@@ -6,7 +6,7 @@ from albumentations.pytorch import ToTensorV2
 transforms = albumentations.Compose(
     [
         albumentations.ToFloat(),
-        albumentations.Flip(p=0.5),
+        # albumentations.Flip(p=0.5),
         # albumentations.OneOf(
         #     [
         #         albumentations.ElasticTransform(alpha=1, sigma=20, alpha_affine=10),
@@ -26,16 +26,16 @@ transforms = albumentations.Compose(
         #     ),
         #     p=1.0,
         # ),
-        albumentations.OneOf(
-            [
-                albumentations.CoarseDropout(
-                    max_holes=16, max_height=128 // 16, max_width=256 // 16, fill_value=0, p=0.5
-                ),
-                albumentations.GridDropout(ratio=0.09, p=0.5),
-            ],
-            p=0.5,
-        ),
-        albumentations.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.2, rotate_limit=45, p=0.5),
+        # albumentations.OneOf(
+        #     [
+        #         albumentations.CoarseDropout(
+        #             max_holes=16, max_height=128 // 16, max_width=256 // 16, fill_value=0, p=0.5
+        #         ),
+        #         albumentations.GridDropout(ratio=0.09, p=0.5),
+        #     ],
+        #     p=0.5,
+        # ),
+        # albumentations.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.2, rotate_limit=45, p=0.5),
         ToTensorV2(),
     ],
     additional_targets={

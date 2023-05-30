@@ -71,7 +71,7 @@ class LightningModel(pl.LightningModule):
         :rtype: torch.FloatTensor
         """
         _depth_loss = self.depth_loss(prediction["depth_mask"], depth_ground_truth)
-        _segmentation_loss = self.segmentation_loss(prediction["seg_mask"], torch.squeeze(segmentation_ground_truth).long())
+        _segmentation_loss = self.segmentation_loss(prediction["seg_mask"], segmentation_ground_truth.long())
         self.log(f"{state}/{self.depth_loss.__class__.__name__}", _depth_loss)
         self.log(f"{state}/{self.segmentation_loss.__class__.__name__}", _segmentation_loss)
         return  _segmentation_loss

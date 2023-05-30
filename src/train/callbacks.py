@@ -45,7 +45,7 @@ class ModelCheckpoint(callbacks.ModelCheckpoint):
 class VisualizePrediction(callbacks.Callback):
     """Visualize the prediction and ground truth for the first num_samples in the validation dataset."""
 
-    def __init__(self, num_samples: int = 3) -> None:
+    def __init__(self, num_samples: int = 1) -> None:
         """Initialize the visualize prediction callback.
 
         :param num_samples: number of samples to visualize
