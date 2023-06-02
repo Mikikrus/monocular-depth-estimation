@@ -7,6 +7,8 @@ from lightning.pytorch import callbacks
 
 from src import DEVICE
 
+from .utils import create_color_map
+
 
 class ModelCheckpoint(callbacks.ModelCheckpoint):
     """Model checkpoint callback. Saves the best model based on the validation loss."""
@@ -76,9 +78,11 @@ class VisualizePrediction(callbacks.Callback):
                 depth_output = prediction["depth_mask"].detach().cpu()
 
             fig, ax = plt.subplots(2, ncols=2, figsize=(15, 5))
-            ax[0,0].imshow(depth_image.squeeze().cpu(), cmap="hot")
-            ax[0,1].imshow(depth_output.squeeze().cpu(), cmap="hot")
-            ax[1,0].imshow(segmentation_labels.squeeze().cpu(), cmap="hot")
-            ax[1,1].imshow(segmentation_output.squeeze().cpu(), cmap="hot")
+            colored_segmentation_labels = create_color_map(segmentation_labels.squeeze().cpu())
+            colored_segmentation_output = create_color_map(segmentation_output.squeeze().cpu())
+            ax[0, 0].imshow(colored_segmentation_labels)
+            ax[0, 1].imshow(colored_segmentation_output)
+            ax[1, 0].imshow(depth_image.squeeze().cpu(), cmap="hot")
+            ax[1, 1].imshow(depth_output.squeeze().cpu(), cmap="hot")
             trainer.logger.experiment.log({f"prediction {prediction_id}": fig})
             plt.close(fig)

@@ -7,6 +7,7 @@ import torch
 from torch import nn
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 
+from src.train.losses import DiceLoss
 from src.utils import CallableObjectProtocol
 
 
@@ -49,6 +50,7 @@ class LightningModel(pl.LightningModule):
         self.depth_loss = depth_loss
         self.segmentation_loss = segmentation_loss
         self.lr_scheduler_params = lr_scheduler_params
+        self.dice_loss = DiceLoss(ignore_values=-1)
 
     def calculate_loss(
         self,
@@ -72,9 +74,11 @@ class LightningModel(pl.LightningModule):
         """
         _depth_loss = self.depth_loss(prediction["depth_mask"], depth_ground_truth)
         _segmentation_loss = self.segmentation_loss(prediction["seg_mask"], segmentation_ground_truth.long())
+        _dice_loss = self.dice_loss(prediction["seg_mask"], segmentation_ground_truth.long())
         self.log(f"{state}/{self.depth_loss.__class__.__name__}", _depth_loss)
+        self.log(f"{state}/{self.dice_loss.__class__.__name__}", _dice_loss)
         self.log(f"{state}/{self.segmentation_loss.__class__.__name__}", _segmentation_loss)
-        return  _segmentation_loss
+        return _segmentation_loss + _dice_loss + _depth_loss
 
     def forward_step(self, batch, batch_idx, state="Train") -> torch.Tensor:
         """Forward step of the model.

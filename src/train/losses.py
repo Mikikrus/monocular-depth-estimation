@@ -1,10 +1,10 @@
 """Loss functions for training."""
-from typing import Optional, Union
-from torch.nn.modules.loss import _Loss
-from torch.nn import functional as F
 from functools import partial
+from typing import Optional, Union
+
 import torch
 from torch import nn
+from torch.nn import functional as f
 
 
 class L1Loss(nn.Module):
@@ -44,13 +44,8 @@ class L1Loss(nn.Module):
             out = nn.functional.normalize(out, p=2, dim=1)
 
         mask = label != self.ignore_values
-        n_valid = torch.sum(mask).item()
         masked_out = torch.masked_select(out, mask)
         masked_label = torch.masked_select(label, mask)
-        if self.reduction == "mean":
-            return nn.functional.l1_loss(masked_out, masked_label, reduction=self.reduction) / max(n_valid, 1)
-        elif self.reduction == "sum":
-            return nn.functional.l1_loss(masked_out, masked_label, reduction=self.reduction)
         return nn.functional.l1_loss(masked_out, masked_label, reduction=self.reduction)
 
 
@@ -65,30 +60,33 @@ def focal_loss_with_logits(
     eps: float = 1e-6,
 ) -> torch.Tensor:
     """Compute binary focal loss between target and output logits.
-    See :class:`~pytorch_toolbelt.losses.FocalLoss` for details.
 
-    Args:
-        output: Tensor of arbitrary shape (predictions of the model)
-        target: Tensor of the same shape as input
-        gamma: Focal loss power factor
-        alpha: Weight factor to balance positive and negative samples. Alpha must be in [0...1] range,
-            high values will give more weight to positive class.
-        reduction (string, optional): Specifies the reduction to apply to the output:
-            'none' | 'mean' | 'sum' | 'batchwise_mean'. 'none': no reduction will be applied,
-            'mean': the sum of the output will be divided by the number of
-            elements in the output, 'sum': the output will be summed. Note: :attr:`size_average`
-            and :attr:`reduce` are in the process of being deprecated, and in the meantime,
-            specifying either of those two args will override :attr:`reduction`.
-            'batchwise_mean' computes mean loss per sample in batch. Default: 'mean'
-        normalized (bool): Compute normalized focal loss (https://arxiv.org/pdf/1909.07829.pdf).
-        reduced_threshold (float, optional): Compute reduced focal loss (https://arxiv.org/abs/1903.01347).
-
-    References:
-        https://github.com/open-mmlab/mmdetection/blob/master/mmdet/core/loss/losses.py
+    :param output: Tensor of arbitrary shape (predictions of the model)
+    :type output: torch.Tensor
+    :param target: Tensor of the same shape as input
+    :type target: torch.Tensor
+    :param gamma: Focal loss power factor, defaults to 2.0
+    :type gamma: float, optional
+    :param alpha: Weight factor to balance positive and negative samples. Alpha must be in [0...1] range,
+        high values will give more weight to positive class, defaults to 0.25
+    :type alpha: Optional[float], optional
+    :param reduction: Specifies the reduction to apply to the output: 'none' | 'mean' | 'sum' | 'batchwise_mean'.
+        'none': no reduction will be applied, 'mean': the sum of the output will be divided by the number of
+        elements in the output, 'sum': the output will be summed.
+    :type reduction: str, optional
+    :param normalized: If True, losses are normalized by the number of positive pixels in target
+    :type normalized: bool, optional
+    :param reduced_threshold: Threshold for reduced focal loss
+    :type reduced_threshold: Optional[float], optional
+    :param eps: Epsilon to avoid log(0)
+    :type eps: float, optional
+    :return: Loss value
+    :rtype: torch.Tensor
     """
+
     target = target.type(output.type())
 
-    logpt = F.binary_cross_entropy_with_logits(output, target, reduction="none")
+    logpt = f.binary_cross_entropy_with_logits(output, target, reduction="none")
     pt = torch.exp(-logpt)
 
     # compute the loss
@@ -117,38 +115,37 @@ def focal_loss_with_logits(
     return loss
 
 
-class FocalLoss(_Loss):
+class FocalLoss(nn.Module):
     def __init__(
         self,
         alpha: Optional[float] = None,
         gamma: Optional[float] = 2.0,
-        ignore_index: Optional[int] = None,
+        ignore_values: Optional[int] = None,
         reduction: Optional[str] = "mean",
         normalized: bool = False,
         reduced_threshold: Optional[float] = None,
     ):
-        """Compute Focal loss
+        """Compute focal loss between target and output logits.
 
-        Args:
-            alpha: Prior probability of having positive value in target.
-            gamma: Power factor for dampening weight (focal strength).
-            ignore_index: If not None, targets may contain values to be ignored.
-                Target values equal to ignore_index will be ignored from loss computation.
-            normalized: Compute normalized focal loss (https://arxiv.org/pdf/1909.07829.pdf).
-            reduced_threshold: Switch to reduced focal loss. Note, when using this mode you
-                should use `reduction="sum"`.
-
-        Shape
-             - **y_pred** - torch.Tensor of shape (N, C, H, W)
-             - **y_true** - torch.Tensor of shape (N, H, W) or (N, C, H, W)
-
-        Reference
-            https://github.com/BloodAxe/pytorch-toolbelt
-
+        :param alpha: Weight factor to balance positive and negative samples. Alpha must be in [0...1] range,
+            high values will give more weight to positive class.
+        :type alpha: Optional[float], optional
+        :param gamma: Focal loss power factor, defaults to 2.0
+        :type gamma: Optional[float], optional
+        :param ignore_values: Values to ignore, defaults to None
+        :type ignore_values: Optional[int], optional
+        :param reduction: Reduction type, defaults to 'mean'
+        :type reduction: Optional[str], optional
+        :param normalized: Compute normalized focal loss (https://arxiv.org/pdf/1909.07829.pdf), defaults to False
+        :type normalized: bool, optional
+        :param reduced_threshold: Compute reduced focal loss (https://arxiv.org/abs/1903.01347), defaults to None
+        :type reduced_threshold: Optional[float], optional
+        :return: None
+        :rtype: None
         """
         super().__init__()
 
-        self.ignore_index = ignore_index
+        self.ignore_values = ignore_values
         self.focal_loss_fn = partial(
             focal_loss_with_logits,
             alpha=alpha,
@@ -159,19 +156,28 @@ class FocalLoss(_Loss):
         )
 
     def forward(self, y_pred: torch.Tensor, y_true: torch.Tensor) -> torch.Tensor:
+        """Forward propagation method for the focal loss.
 
+        :param y_pred: Predicted logits
+        :type y_pred: torch.Tensor
+        :param y_true: Ground truth labels
+        :type y_true: torch.Tensor
+        :return: Focal loss
+        :rtype: torch.Tensor
+        """
         num_classes = y_pred.size(1)
         loss = 0
 
         # Filter anchors with -1 label from loss computation
-        if self.ignore_index is not None:
-            not_ignored = y_true != self.ignore_index
+        if self.ignore_values is not None:
+            not_ignored = y_true != self.ignore_values
+            not_ignored = not_ignored.squeeze(1)
 
         for cls in range(num_classes):
-            cls_y_true = (y_true == cls).long()
+            cls_y_true = (y_true == cls).long().squeeze(1)
             cls_y_pred = y_pred[:, cls, ...]
 
-            if self.ignore_index is not None:
+            if self.ignore_values is not None:
                 cls_y_true = cls_y_true[not_ignored]
                 cls_y_pred = cls_y_pred[not_ignored]
 
@@ -179,93 +185,116 @@ class FocalLoss(_Loss):
 
         return loss
 
-def label_smoothed_nll_loss(
-    lprobs: torch.Tensor,
-    target: torch.Tensor,
-    epsilon: float,
-    ignore_index=None,
-    reduction="mean",
-    dim=-1,
-) -> torch.Tensor:
-    """NLL loss with label smoothing
 
-    References:
-        https://github.com/pytorch/fairseq/blob/master/fairseq/criterions/label_smoothed_cross_entropy.py
-
-    Args:
-        lprobs (torch.Tensor): Log-probabilities of predictions (e.g after log_softmax)
-
-    """
-    if target.dim() == lprobs.dim() - 1:
-        target = target.unsqueeze(dim)
-    # print('=======================')
-    # print(target.shape, lprobs.shape)
-    # print('=======================')
-
-    if ignore_index is not None:
-        pad_mask = target.eq(ignore_index)
-        target = target.masked_fill(pad_mask, 0)
-        nll_loss = -lprobs.gather(dim=dim, index=target)
-        smooth_loss = -lprobs.sum(dim=dim, keepdim=True)
-
-        # nll_loss.masked_fill_(pad_mask, 0.0)
-        # smooth_loss.masked_fill_(pad_mask, 0.0)
-        nll_loss = nll_loss.masked_fill(pad_mask, 0.0)
-        smooth_loss = smooth_loss.masked_fill(pad_mask, 0.0)
-    else:
-        nll_loss = -lprobs.gather(dim=dim, index=target)
-        smooth_loss = -lprobs.sum(dim=dim, keepdim=True)
-
-        nll_loss = nll_loss.squeeze(dim)
-        smooth_loss = smooth_loss.squeeze(dim)
-
-    if reduction == "sum":
-        nll_loss = nll_loss.sum()
-        smooth_loss = smooth_loss.sum()
-    if reduction == "mean":
-        nll_loss = nll_loss.mean()
-        smooth_loss = smooth_loss.mean()
-
-    eps_i = epsilon / lprobs.size(dim)
-    loss = (1.0 - epsilon) * nll_loss + eps_i * smooth_loss
-    return loss
-
-class SoftCrossEntropyLoss(nn.Module):
-
-    __constants__ = ["reduction", "ignore_index", "smooth_factor"]
-
+class CrossEntropyLoss(nn.Module):
     def __init__(
         self,
         reduction: str = "mean",
-        smooth_factor: Optional[float] = 0.1,
-        ignore_index: Optional[int] = -100,
+        ignore_values: Optional[int] = -1,
         dim: int = 1,
     ):
-        """Drop-in replacement for torch.nn.CrossEntropyLoss with label_smoothing
+        """Cross entropy loss.
 
-        Args:
-            smooth_factor: Factor to smooth target (e.g. if smooth_factor=0.1 then [1, 0, 0] -> [0.9, 0.05, 0.05])
-
-        Shape
-             - **y_pred** - torch.Tensor of shape (N, C, H, W)
-             - **y_true** - torch.Tensor of shape (N, H, W)
-
-        Reference
-            https://github.com/BloodAxe/pytorch-toolbelt
+        :param reduction: Reduction type, defaults to 'mean'
+        :type reduction: str, optional
+        :param ignore_values: Values to ignore, defaults to -1
+        :type ignore_values: Optional[int], optional
+        :param dim: Dimension to reduce, defaults to 1
+        :type dim: int, optional
+        :return: None
+        :rtype: None
         """
         super().__init__()
-        self.smooth_factor = smooth_factor
-        self.ignore_index = ignore_index
+        self.ignore_values = ignore_values
         self.reduction = reduction
         self.dim = dim
 
     def forward(self, y_pred: torch.Tensor, y_true: torch.Tensor) -> torch.Tensor:
-        log_prob = F.log_softmax(y_pred, dim=self.dim)
-        return label_smoothed_nll_loss(
-            log_prob,
-            y_true,
-            epsilon=self.smooth_factor,
-            ignore_index=self.ignore_index,
-            reduction=self.reduction,
-            dim=self.dim,
-        )
+        """Forward propagation method for the cross entropy loss.
+
+        :param y_pred: Predicted logits
+        :type y_pred: torch.Tensor
+        :param y_true: Ground truth labels
+        :type y_true: torch.Tensor
+        :return: Cross entropy loss
+        :rtype: torch.Tensor
+        """
+
+        if y_true.dim() == y_pred.dim():
+            y_true = y_true.squeeze(self.dim)
+
+        if self.ignore_values is not None:
+            pad_mask = y_true.eq(self.ignore_values)
+
+            y_true = y_true.masked_fill(pad_mask, 0)
+
+            y_pred = y_pred.masked_fill(pad_mask, 0)
+        loss = f.cross_entropy(y_pred, y_true, reduction=self.reduction)
+        return loss
+
+
+def dice_loss(true: torch.Tensor, logits: torch.Tensor, eps: float = 1e-7) -> torch.Tensor:
+    """Computes the Sørensen–Dice loss.
+
+    :param true: a tensor of shape [B, 1, H, W].
+    :type true: torch.Tensor
+    :param logits: a tensor of shape [B, C, H, W]. Corresponds to
+        the raw output or logits of the model.
+    :type logits: torch.Tensor
+    :param eps: added to the denominator for numerical stability.
+    :type eps: float, optional
+    :return: dice_loss: the Sørensen–Dice loss.
+    :rtype: torch.Tensor
+    """
+    num_classes = logits.shape[1]
+    if num_classes == 1:
+        true_1_hot = torch.eye(num_classes + 1)[true.squeeze(1)]
+        true_1_hot = true_1_hot.permute(0, 3, 1, 2).float()
+        true_1_hot_f = true_1_hot[:, 0:1, :, :]
+        true_1_hot_s = true_1_hot[:, 1:2, :, :]
+        true_1_hot = torch.cat([true_1_hot_s, true_1_hot_f], dim=1)
+        pos_prob = torch.sigmoid(logits)
+        neg_prob = 1 - pos_prob
+        probas = torch.cat([pos_prob, neg_prob], dim=1)
+    else:
+        true_1_hot = torch.eye(num_classes).to(logits.device)
+        true_1_hot = true_1_hot[true.squeeze(1)]
+        true_1_hot = true_1_hot.permute(0, 3, 1, 2).float()
+        probas = f.softmax(logits, dim=1)
+    true_1_hot = true_1_hot.type(logits.type())
+    dims = (0,) + tuple(range(2, true.ndimension()))
+    intersection = torch.sum(probas * true_1_hot, dims)
+    cardinality = torch.sum(probas + true_1_hot, dims)
+    _dice_loss = (2.0 * intersection / (cardinality + eps)).mean()
+    return 1 - _dice_loss
+
+
+class DiceLoss(nn.Module):
+    def __init__(self, ignore_values: Optional[int] = -1):
+        """Dice loss.
+
+        :param ignore_values: Values to ignore, defaults to -1
+        :type ignore_values: Optional[int], optional
+        :return: None
+        :rtype: None
+        """
+        super().__init__()
+        self.ignore_values = ignore_values
+
+    def forward(self, y_pred: torch.Tensor, y_true: torch.Tensor) -> torch.Tensor:
+        """Forward propagation method for the dice loss.
+
+        :param y_pred: Predicted logits
+        :type y_pred: torch.Tensor
+        :param y_true: Ground truth labels
+        :type y_true: torch.Tensor
+        :return: Dice loss
+        :rtype: torch.Tensor
+        """
+        if y_pred.dim() != y_true.dim():
+            y_true = y_true.unsqueeze(1)
+        pad_mask = y_true.eq(self.ignore_values)
+
+        true = y_true.masked_fill(pad_mask, 0)
+        pred = y_pred.masked_fill(pad_mask, 0)
+        return dice_loss(true, pred)

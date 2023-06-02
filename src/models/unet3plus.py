@@ -231,7 +231,6 @@ class Unet3Plus(BaseModel):
         self,
         encoder_name: str = "resnet34",
         encoder_depth: int = 5,
-        encoder_weights: Optional[str] = "imagenet",
         decoder_use_batchnorm: bool = True,
         decoder_channels: tuple = (256, 128, 64, 32, 16),
         decoder_attention_type: Optional[str] = None,
@@ -246,8 +245,6 @@ class Unet3Plus(BaseModel):
         :type encoder_name: str
         :param encoder_depth: number of stages used in decoder, larger depth - more features are generated.
         :type encoder_depth: int
-        :param encoder_weights: one of ``None`` (random initialization), ``imagenet`` (pre-training on ImageNet).
-        :type encoder_weights: str
         :param decoder_use_batchnorm: if ``True``, ``BatchNormalisation`` layer between ``Conv2D`` and ``Activation``
             layers is used, ``False`` otherwise.
         :type decoder_use_batchnorm: bool
@@ -273,23 +270,16 @@ class Unet3Plus(BaseModel):
             depth=encoder_depth,
             pretrained=True,
         )
+        decoder_kwargs = {
+            "encoder_channels": self.encoder.out_channels,
+            "decoder_channels": list(decoder_channels),
+            "n_blocks": encoder_depth,
+            "use_batchnorm": decoder_use_batchnorm,
+            "attention_type": decoder_attention_type,
+        }
 
-        self.depth_decoder = Unet3PlusDecoder(
-            encoder_channels=self.encoder.out_channels,
-            decoder_channels=list(decoder_channels),
-            n_blocks=encoder_depth,
-            use_batchnorm=decoder_use_batchnorm,
-            center=bool(encoder_name.startswith("vgg")),
-            attention_type=decoder_attention_type,
-        )
-        self.seg_decoder = Unet3PlusDecoder(
-            encoder_channels=self.encoder.out_channels,
-            decoder_channels=list(decoder_channels),
-            n_blocks=encoder_depth,
-            use_batchnorm=decoder_use_batchnorm,
-            center=bool(encoder_name.startswith("vgg")),
-            attention_type=decoder_attention_type,
-        )
+        self.depth_decoder = Unet3PlusDecoder(**decoder_kwargs)
+        self.seg_decoder = Unet3PlusDecoder(**decoder_kwargs)
         self.depth_head = BaseHead(
             in_channels=decoder_channels[encoder_depth - 1] * encoder_depth,
             out_channels=1,
@@ -299,7 +289,7 @@ class Unet3Plus(BaseModel):
         self.seg_head = BaseHead(
             in_channels=decoder_channels[encoder_depth - 1] * encoder_depth,
             out_channels=classes,
-            activation_name=activation,
+            activation_name=None,
             kernel_size=3,
         )
         self.name = f"unet3plus-{encoder_name}"

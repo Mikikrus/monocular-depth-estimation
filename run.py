@@ -1,22 +1,21 @@
 import os
 from dataclasses import asdict, dataclass
+from typing import Union
 
 from lightning.pytorch import Trainer, callbacks, seed_everything
 from lightning.pytorch.loggers import WandbLogger
 
-from src import DEVICE
+from src import DEVICE, models
 from src.data.data_module import DepthEstimationDataModule
-from src.models import Unet3Plus, Unet
-from src.train import losses
 from src.train import (
     LightningModel,
     ModelCheckpoint,
     VisualizePrediction,
     get_lr_scheduler_kwargs,
+    losses,
     transforms,
 )
 from src.utils import download_dataset
-from typing import Union
 
 seed_everything(42)
 
@@ -24,21 +23,29 @@ seed_everything(42)
 @dataclass
 class Config:
     data_dir = "../data"
-    batch_size: int = 1
+    batch_size: int = 6
+    batch_size: int = 12
     classes: int = 19
-    num_epochs: int = 1000
+    num_epochs: int = 32
+    num_epochs: int = 50
     num_workers: int = os.cpu_count()
+    model_name: str = "Unet3Plus"
     encoder_name: str = "tf_efficientnetv2_m.in21k_ft_in1k"
     decoder_attention_type: str = "scse"
-    head_activation_name: Union[None, str] = None  # "sigmoid"
-    optimizer: str = "AdamW"
+    head_activation_name: str = "sigmoid"
+    optimizer: str = "Adam"
     learning_rate: float = 1e-4
+    head_activation_name: Union[None, str] = "sigmoid"
+    optimizer: str = "AdamW"
+    learning_rate: float = 1e-3
     accumulate_grad_batches: int = 1
     depth_loss_function_name: str = "L1Loss"
-    seg_loss_function_name: str = "SoftCrossEntropyLoss"
+    seg_loss_function_name: str = "FocalLoss"
     gamma: float = 1.0
     alpha: float = 0.5
     wandb_project_name: str = "depth-estimation"
+    alpha: float = 0.25
+    gamma: float = 2.0
 
 
 config = Config()
@@ -60,7 +67,7 @@ if __name__ == "__main__":
         data_dir=config.data_dir, batch_size=config.batch_size, num_workers=config.num_workers, transforms=transforms
     )
     data_module.setup()
-    model = Unet(
+    model = getattr(models, config.model_name)(
         encoder_name=config.encoder_name,
         classes=config.classes,
         activation=config.head_activation_name,
@@ -71,17 +78,17 @@ if __name__ == "__main__":
         model=model,
         optimizer=config.optimizer,
         learning_rate=config.learning_rate,
-        depth_loss=getattr(losses, config.depth_loss_function_name)(ignore_values=0, reduction="mean"),
+        depth_loss=getattr(losses, config.depth_loss_function_name)(ignore_values=0, reduction="sum"),
         segmentation_loss=getattr(losses, config.seg_loss_function_name)(
-            ignore_index=-1, reduction="sum"
-        ),  # , gamma=config.gamma,alpha=config.alpha),
+            ignore_values=-1, gamma=config.gamma, alpha=config.alpha
+        ),
         lr_scheduler_params=lr_scheduler_kwargs,
     )
     wandb_logger = WandbLogger(project=config.wandb_project_name, config=asdict(config), reinit=True, log_model="all")
     checkpoint_callback = ModelCheckpoint(
         save_top_k=2,
-        monitor=f"Validation/{config.depth_loss_function_name}",
-        filename="{epoch:02d}-{Validation_" + config.depth_loss_function_name + ":.2f}",
+        monitor=f"Validation/{config.seg_loss_function_name}",
+        filename="{epoch:02d}-{Validation/" + config.seg_loss_function_name + ":.2f}",
         dir_path="checkpoints",
     )
     trainer = Trainer(

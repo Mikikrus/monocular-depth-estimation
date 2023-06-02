@@ -9,5 +9,5 @@ elif torch.backends.mps.is_available():
     DEVICE = "mps"
 else:
     DEVICE = "cpu"
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 __all__ = ["IS_COLAB", "DEVICE"]
