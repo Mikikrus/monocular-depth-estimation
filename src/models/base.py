@@ -1,8 +1,8 @@
 """Base classes for all models and heads"""
-from typing import Optional
+from typing import Callable, Dict, Optional, Union
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 from .modules import Activation
 
@@ -15,20 +15,20 @@ def initialize_decoder(module) -> None:
     :return: None
     :rtype: None
     """
-    for m in module.modules():
-        if isinstance(m, nn.Conv2d):
-            nn.init.kaiming_uniform_(m.weight, mode="fan_in", nonlinearity="relu")
-            if m.bias is not None:
-                nn.init.constant_(m.bias, 0)
+    for _module in module.modules():
+        if isinstance(_module, nn.Conv2d):
+            nn.init.kaiming_uniform_(_module.weight, mode="fan_in", nonlinearity="relu")
+            if _module.bias is not None:
+                nn.init.constant_(_module.bias, 0)
 
-        elif isinstance(m, nn.BatchNorm2d):
-            nn.init.constant_(m.weight, 1)
-            nn.init.constant_(m.bias, 0)
+        elif isinstance(_module, nn.BatchNorm2d):
+            nn.init.constant_(_module.weight, 1)
+            nn.init.constant_(_module.bias, 0)
 
-        elif isinstance(m, nn.Linear):
-            nn.init.xavier_uniform_(m.weight)
-            if m.bias is not None:
-                nn.init.constant_(m.bias, 0)
+        elif isinstance(_module, nn.Linear):
+            nn.init.xavier_uniform_(_module.weight)
+            if _module.bias is not None:
+                nn.init.constant_(_module.bias, 0)
 
 
 def initialize_head(module) -> None:
@@ -39,11 +39,11 @@ def initialize_head(module) -> None:
     :return: None
     :rtype: None
     """
-    for m in module.modules():
-        if isinstance(m, (nn.Linear, nn.Conv2d)):
-            nn.init.xavier_uniform_(m.weight)
-            if m.bias is not None:
-                nn.init.constant_(m.bias, 0)
+    for _module in module.modules():
+        if isinstance(_module, (nn.Linear, nn.Conv2d)):
+            nn.init.xavier_uniform_(_module.weight)
+            if _module.bias is not None:
+                nn.init.constant_(_module.bias, 0)
 
 
 class BaseModel(torch.nn.Module):
@@ -55,60 +55,64 @@ class BaseModel(torch.nn.Module):
         :return: None
         :rtype: None
         """
-        initialize_decoder(self.decoder)
-        initialize_head(self.head)
+        initialize_decoder(self.depth_decoder)
+        initialize_decoder(self.seg_decoder)
+        initialize_head(self.seg_head)
+        initialize_head(self.depth_head)
 
-    def check_input_shape(self, x) -> None:
+    def check_input_shape(self, sample: torch.Tensor) -> None:
         """Check if input image height and width are divisible by `output_stride`
 
-        :param x: 4D torch tensor with shape (batch_size, channels, height, width)
-        :type x: torch.Tensor
+        :param sample: 4D torch tensor with shape (batch_size, channels, height, width)
+        :type sample: torch.Tensor
         :raises RuntimeError: if input image height or width are not divisible by `output_stride`
         :return: None
         :rtype: None
         """
-        h, w = x.shape[-2:]
-        output_stride = self.encoder.output_stride
-        if h % output_stride != 0 or w % output_stride != 0:
-            new_h = (h // output_stride + 1) * output_stride if h % output_stride != 0 else h
-            new_w = (w // output_stride + 1) * output_stride if w % output_stride != 0 else w
+        height, width = sample.shape[-2:]
+        output_stride: int = self.encoder.output_stride
+        if height % output_stride != 0 or width % output_stride != 0:
+            new_h = (height // output_stride + 1) * output_stride if height % output_stride != 0 else height
+            new_w = (width // output_stride + 1) * output_stride if width % output_stride != 0 else width
             raise RuntimeError(
-                f"Wrong input shape height={h}, width={w}. Expected image height and width "
+                f"Wrong input shape height={height}, width={width}. Expected image height and width "
                 f"divisible by {output_stride}. Consider pad your images to shape ({new_h}, {new_w})."
             )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, sample: torch.Tensor) -> Dict[str, torch.Tensor]:
         """Sequentially pass `x` trough model`s encoder, decoder and heads.
 
-        :param x: 4D torch tensor with shape (batch_size, channels, height, width)
-        :type x: torch.Tensor
+        :param sample: 4D torch tensor with shape (batch_size, channels, height, width)
+        :type sample: torch.Tensor
         :return: model output
-        :rtype: torch.Tensor
+        :rtype: Dict[str,torch.Tensor]
         """
 
-        self.check_input_shape(x)
+        self.check_input_shape(sample)
 
-        features = self.encoder(x)
-        decoder_output = self.decoder(*features)
+        features = self.encoder(sample)
+        depth_decoder_output = self.depth_decoder(*features)
+        seg_decoder_output = self.seg_decoder(*features)
 
-        masks = self.head(decoder_output)
-        return masks
+        depth_mask = self.depth_head(depth_decoder_output)
+        seg_mask = self.seg_head(seg_decoder_output)
+        return {"depth_mask": depth_mask, "seg_mask": seg_mask}
 
     @torch.no_grad()
-    def predict(self, x: torch.Tensor) -> torch.Tensor:
+    def predict(self, sample: torch.Tensor) -> Dict[str, torch.Tensor]:
         """Inference method. Switch model to `eval` mode, call `.forward(x)` with `torch.no_grad()`
 
-        :param x: 4D torch tensor with shape (batch_size, channels, height, width)
-        :type x: torch.Tensor
+        :param sample: 4D torch tensor with shape (batch_size, channels, height, width)
+        :type sample: torch.Tensor
         :return: prediction
-        :rtype: torch.Tensor
+        :rtype: Dict[str,torch.Tensor]
         """
         if self.training:
             self.eval()
 
-        x = self.forward(x)
+        output = self.forward(sample)
 
-        return x
+        return output
 
 
 class BaseHead(nn.Sequential):
@@ -119,7 +123,7 @@ class BaseHead(nn.Sequential):
         in_channels: int,
         out_channels: int,
         kernel_size: int = 3,
-        activation_name: Optional[str] = None,
+        activation_name: Optional[Union[str, Callable]] = None,
         upsampling: int = 1,
     ) -> None:
         """Initialize head module.
@@ -138,6 +142,6 @@ class BaseHead(nn.Sequential):
         :rtype: None
         """
         conv2d = nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=kernel_size // 2)
-        upsampling = nn.UpsamplingBilinear2d(scale_factor=upsampling) if upsampling > 1 else nn.Identity()
+        upsampling_block = nn.UpsamplingBilinear2d(scale_factor=upsampling) if upsampling > 1 else nn.Identity()
         activation_name = Activation(activation_name)
-        super().__init__(conv2d, upsampling, activation_name)
+        super().__init__(conv2d, upsampling_block, activation_name)

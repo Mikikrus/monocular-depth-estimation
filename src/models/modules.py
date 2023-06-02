@@ -1,5 +1,5 @@
 """Modules for building neural network models."""
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
 import torch
 import torch.nn as nn
@@ -141,7 +141,7 @@ class Clamp(nn.Module):
 class Activation(nn.Module):
     """Activation module."""
 
-    def __init__(self, name: str, **params) -> None:
+    def __init__(self, name: Optional[Union[str, Callable]], **params) -> None:
         """Initialize Activation module.
 
         :param name: name of the activation function
@@ -193,11 +193,11 @@ class Activation(nn.Module):
 class Attention(nn.Module):
     """Attention module."""
 
-    def __init__(self, name: str, **params) -> None:
+    def __init__(self, name: Optional[str], **params) -> None:
         """Initialize Attention module.
 
         :param name: name of the attention module
-        :type name: str
+        :type name:  Optional[str], optional
         :param params: parameters for the attention module
         :type params: dict
         :return: None
