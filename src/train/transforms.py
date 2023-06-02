@@ -41,6 +41,6 @@ transforms = albumentations.Compose(
     additional_targets={
         "image": "image",
         "depth_image": "image",
-        "label": "image",
+        "label": "mask",
     },
 )

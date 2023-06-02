@@ -48,6 +48,7 @@ class DepthEstimationDataModule(pl.LightningDataModule):
             self.train_subset,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
+            shuffle=False,
             persistent_workers=self.persistent_workers,
         )
 
@@ -61,5 +62,6 @@ class DepthEstimationDataModule(pl.LightningDataModule):
             self.val_subset,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
+            shuffle=False,
             persistent_workers=self.persistent_workers,
         )

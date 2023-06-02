@@ -1,27 +1,14 @@
 """Training module. It contains LightningModel class that is a wrapper around the model that handles forward step,
 loss calculation, optimizer and learning rate scheduler."""
-from typing import Any, Protocol, Union
+from typing import Dict, Union
 
 import lightning as pl
 import torch
 from torch import nn
 from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 
-
-class CallableObjectProtocol(Protocol):
-    """Protocol for callable objects."""
-
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        """Call method of the callable object.
-
-        :param args: Arguments.
-        :type args: Any
-        :param kwargs: Keyword arguments.
-        :type kwargs: Any
-        :return: Result of the call.
-        :rtype: Any
-        """
-        ...
+from src.train.losses import DiceLoss
+from src.utils import CallableObjectProtocol
 
 
 class LightningModel(pl.LightningModule):
@@ -33,7 +20,8 @@ class LightningModel(pl.LightningModule):
         model: nn.Module,
         optimizer: str,
         learning_rate: float,
-        loss: CallableObjectProtocol,
+        depth_loss: CallableObjectProtocol,
+        segmentation_loss: CallableObjectProtocol,
         lr_scheduler_params: Union[dict, None],
     ) -> None:
         """Initialize LightningModel.
@@ -44,8 +32,10 @@ class LightningModel(pl.LightningModule):
         :type optimizer: str
         :param learning_rate: Learning rate.
         :type learning_rate: float
-        :param loss: Loss function.
-        :type loss: CallableObjectProtocol
+        :param depth_loss: Loss function used in depth estimation head.
+        :type depth_loss: CallableObjectProtocol
+        :param segmentation_loss: Loss function used in segmentation head.
+        :type segmentation_loss: CallableObjectProtocol
         :param lr_scheduler_params: Parameters for the learning rate scheduler, defaults to None
         :type lr_scheduler_params: Union[dict, None], optional
         :return: None
@@ -57,20 +47,38 @@ class LightningModel(pl.LightningModule):
         self.learning_rate = learning_rate
         self.save_hyperparameters(ignore=["model", "loss"])
         self.lr_scheduler = None
-        self.loss = loss
+        self.depth_loss = depth_loss
+        self.segmentation_loss = segmentation_loss
         self.lr_scheduler_params = lr_scheduler_params
+        self.dice_loss = DiceLoss(ignore_values=-1)
 
-    def calculate_loss(self, prediction: torch.Tensor, ground_truth: torch.Tensor) -> torch.FloatTensor:
+    def calculate_loss(
+        self,
+        prediction: Dict[str, torch.Tensor],
+        depth_ground_truth: torch.Tensor,
+        segmentation_ground_truth: torch.Tensor,
+        state: str = "Train",
+    ) -> torch.FloatTensor:
         """Calculates loss between prediction and ground truth on the pixels.
 
         :param prediction: Prediction of the model.
-        :type prediction: torch.Tensor
-        :param ground_truth: Ground truth.
-        :type prediction: torch.Tensor
+        :type prediction: Dict[str,torch.Tensor]
+        :param depth_ground_truth: Depth ground truth.
+        :type depth_ground_truth: torch.Tensor
+        :param segmentation_ground_truth: Segmentation ground truth.
+        :type segmentation_ground_truth: torch.Tensor
+        :param state: State of the model, defaults to "Train"
+        :type state: str, optional
         :return: Loss value.
+        :rtype: torch.FloatTensor
         """
-        loss = self.loss(prediction, ground_truth)
-        return loss
+        _depth_loss = self.depth_loss(prediction["depth_mask"], depth_ground_truth)
+        _segmentation_loss = self.segmentation_loss(prediction["seg_mask"], segmentation_ground_truth.long())
+        _dice_loss = self.dice_loss(prediction["seg_mask"], segmentation_ground_truth.long())
+        self.log(f"{state}/{self.depth_loss.__class__.__name__}", _depth_loss)
+        self.log(f"{state}/{self.dice_loss.__class__.__name__}", _dice_loss)
+        self.log(f"{state}/{self.segmentation_loss.__class__.__name__}", _segmentation_loss)
+        return _segmentation_loss + _dice_loss + _depth_loss
 
     def forward_step(self, batch, batch_idx, state="Train") -> torch.Tensor:
         """Forward step of the model.
@@ -86,9 +94,11 @@ class LightningModel(pl.LightningModule):
         """
         images = batch["image"]
         depth_images = batch["depth_image"]
+        label = batch["label"]
         outputs = self.model(images)
-        loss = self.calculate_loss(prediction=outputs, ground_truth=depth_images)
-        self.log(f"{state}/{self.loss.__class__.__name__}", loss)
+        loss = self.calculate_loss(
+            prediction=outputs, depth_ground_truth=depth_images, segmentation_ground_truth=label, state=state
+        )
         return loss
 
     def training_step(self, batch, batch_idx):

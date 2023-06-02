@@ -5,7 +5,7 @@ from .timm_encoder import TimmUniversalEncoder
 
 
 def get_encoder(
-    name: str, in_channels: int = 3, depth: int = 5, weights: Optional[str] = None, output_stride: int = 32
+    name: str, in_channels: int = 3, depth: int = 5, pretrained: Optional[bool] = True, output_stride: int = 32
 ):
     """Loads encoder by name from timm library.
 
@@ -27,6 +27,6 @@ def get_encoder(
         in_channels=in_channels,
         depth=depth,
         output_stride=output_stride,
-        pretrained=weights is not None,
+        pretrained=pretrained,
     )
     return encoder

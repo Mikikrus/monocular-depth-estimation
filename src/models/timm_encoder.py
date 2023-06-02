@@ -1,7 +1,7 @@
 """Timm universal encoder. Loads encoder by name from timm library."""
 import timm
 import torch
-import torch.nn as nn
+from torch import nn
 
 
 class TimmUniversalEncoder(nn.Module):
@@ -52,16 +52,16 @@ class TimmUniversalEncoder(nn.Module):
         self._depth = depth
         self._output_stride = output_stride
 
-    def forward(self, x: torch.Tensor) -> list[torch.Tensor]:
+    def forward(self, sample: torch.Tensor) -> list[torch.Tensor]:
         """Forward pass.
 
-        :param x: Input tensor.
-        :type x: torch.Tensor
+        :param sample: Input tensor.
+        :type sample: torch.Tensor
         :return: Features.
         :rtype: list[torch.Tensor]"""
-        features = self.model(x)
+        features = self.model(sample)
         features = [
-            x,
+            sample,
         ] + features
         return features
 
