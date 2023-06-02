@@ -1,0 +1,10 @@
+monocular-depth-estimation
+==========================
+
+.. toctree::
+   :maxdepth: 4
+
+   run
+   setup
+   src
+   tests
