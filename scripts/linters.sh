@@ -13,6 +13,6 @@ echo '<--- Flake8 ANALYSIS --->'
 python3 -m flake8 --ignore=E203,E231 --max-line-length 120 --max-complexity 10 ${main_dir}
 echo '<--- PYLINT ANALYSIS --->'
 PYFILES=$(find ${main_dir} -type f -name "*.py")
-python3 -m pylint --rcfile=pylint.ini ${PYFILES}
+python3 -m pylint ${PYFILES}
 echo '<--- MYPY ANALYSIS --->'
 python3 -m mypy ${main_dir}
